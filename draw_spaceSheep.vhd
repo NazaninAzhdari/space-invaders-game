@@ -17,7 +17,7 @@ end draw_spaceSheep;
 architecture RTL of draw_spaceSheep is
     signal r_x          :   integer range 0 to pc_GAME_WIDTH -1                  :=0;
     signal r_y          :   integer range 0 to pc_GAME_HEIGHT -1                 :=0;
-    signal r_x_start_SS :   integer range pc_X_START_BORDER to pc_X_END_BORDER   :=pc_xMIDDLE_BORDER;
+    signal r_x_start_SS :   integer range pc_X_START_BORDER to pc_X_END_BORDER   :=pc_X_INITIAL_SS;
 
     begin
         r_x <= to_integer(i_x);

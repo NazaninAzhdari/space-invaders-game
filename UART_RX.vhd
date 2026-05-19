@@ -10,7 +10,7 @@ entity UART_RX is
     port (
         i_clk                :   in      STD_LOGIC;
         i_data_serial        :   in      STD_LOGIC;
-        o_data_parallel      :   out     unsigned(g_BIT_LIMIT -1 downto 0);
+        o_data_parallel      :   out     unsigned(g_BITS_LIMIT -1 downto 0);
         o_data_DV            :   out     STD_LOGIC
     );
 end UART_RX;
@@ -21,16 +21,17 @@ architecture RTL of UART_RX is
     signal   r_SM                 :  t_UART_SM      :=IDLE;
     constant c_HALF_CLKS_PER_BIT  :  integer        :=(g_CLKS_PER_BIT / 2);
 
-    signal r_clk_counter     :  integer range 0 to g_CLKS_PER_BIT       :=0;
-    signal r_bit_counter     :  integer range 0 to g_BIT_LIMIT          :=0;
-    signal r_data_serial     :  STD_LOGIC                               :='0';
-    signal r_shift           :  unsigned(g_BIT_LIMIT -1 downto 0)       :=(others=>'0');
+    signal r_clk_counter     :  integer range 0 to g_CLKS_PER_BIT     :=0;
+    signal r_bit_counter     :  integer range 0 to g_BITS_LIMIT       :=0;
+    signal r_data_serial     :  STD_LOGIC                             :='0';
+    signal r_shift           :  unsigned(g_BITS_LIMIT -1 downto 0)    :=(others=>'0');
+	signal r_DV              :  STD_LOGIC                             :='0';
     
     begin
         process(i_clk) is
             begin
                 if rising_edge(i_clk) then
-                    r_data_serial <= i_dtat_serial;
+                    r_data_serial <= i_data_serial;
 
                     case r_SM is 
                         when IDLE =>
@@ -38,16 +39,22 @@ architecture RTL of UART_RX is
                             r_clk_counter <= 0;
                             r_bit_counter <= 0;
 
+                            -------------------------------------------------------------
+                            --Detect the falling edge of the start bit.
+                            -------------------------------------------------------------
                             if i_data_serial = '0' and r_data_serial = '1' then
                                 r_SM <= START_BIT;
                             end if;
 
                         when START_BIT =>
+                            ------------------------------------------------------------------------
+                            --Wait until the middle of the bit period and sample the recieved data.
+                            ------------------------------------------------------------------------
                             if r_clk_counter < c_HALF_CLKS_PER_BIT then
                                 r_clk_counter <= r_clk_counter + 1;
                             else
                                 r_clk_counter <= 0;
-                                if i_data_serial = '0' then
+                                if i_data_serial = '0' then --Check if the Start bit is still zero or not, if not come back to idle
                                     r_SM <= RECIEVE_BITS;
                                 else
                                     r_SM <= IDLE;
@@ -55,11 +62,14 @@ architecture RTL of UART_RX is
                             end if;
 
                         when RECIEVE_BITS =>
+                            --------------------------------------------------------------------------------------------------
+                            --since we are at the middle of bit period, we will wait for one bit period and sample the data
+                            --------------------------------------------------------------------------------------------------
                             if r_clk_counter < g_CLKS_PER_BIT then
                                 r_clk_counter <= r_clk_counter + 1;
                             else
                                 r_clk_counter <= 0;
-                                if r_bit_counter < BIT_LIMIT then
+                                if r_bit_counter < g_BITS_LIMIT then
                                     r_shift <= i_data_serial & r_shift(g_BITS_LIMIT -1 downto 1);
                                     r_bit_counter <= r_bit_counter + 1;
                                 else
@@ -69,6 +79,9 @@ architecture RTL of UART_RX is
                             end if;
 
                         when STOP_BIT =>
+                            -------------------------------------------------
+                            --check the stop bit, if its 1, then r_DV goes high
+                            --------------------------------------------------
                             if i_data_serial = '1' then
                                 r_SM <= IDLE;
                                 r_DV <= '1';
@@ -83,7 +96,7 @@ architecture RTL of UART_RX is
                     end if;
             end process;
             
-            o_DV <= r_DV;
+            o_data_DV <= r_DV;
             o_data_parallel <= r_shift;
 
     end RTL;

@@ -7,10 +7,10 @@ use work.SI_pack.ALL;
 
 entity draw_bullets is
     port (
-        i_bullets       :   in      pt_bullet_pack;
+        i_bullets       :   in      pt_bullets_pack;
         i_x             :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_y             :   in      unsigned(pc_GAME_BITS-1 downto 0);
-        o_draw_bullets  :   out     pt_bullets
+        o_draw_bullets  :   out     pt_drawing_bullets
     );
 end draw_bullets;
 

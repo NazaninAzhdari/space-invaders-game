@@ -29,13 +29,19 @@ architecture RTL of movement_spaceSheep is
 
         process(i_clk) is
             begin
+                -----------------------------------------------------------------------------
+                --by restting the game, the space-sheep will be placed in its initial place
+                -----------------------------------------------------------------------------
                 if i_reset = '1' then 
-                    r_x_start_SS <= pc_X_MIDDLE_BORDER;
+                    r_x_start_SS <= pc_X_INITIAL_SS;
                     r_right_counter <= 0;
                     r_left_counter <= 0;
 
                 elsif rising_edge(i_clk) then
                     if i_en = '1' then
+                        -------------------------------------------------------------------------------------------
+                        --if right button pressed, space-sheep moves towards the right side, untill the end border
+                        -------------------------------------------------------------------------------------------
                         if i_right_button = '1' then
                             if r_right_counter < pc_SS_SPEED then
                                 r_right_counter <= r_right_counter + 1;
@@ -45,9 +51,11 @@ architecture RTL of movement_spaceSheep is
                                     r_x_start_SS <= r_x_start_SS + 1;
                                 end if;
                             end if;
-                            r_left_counter <= 0;
+                            r_left_counter <= 0; 
 
-
+                        -------------------------------------------------------------------------------------------
+                        --if left button pressed, space-sheep moves towards the left side, untill the start border
+                        -------------------------------------------------------------------------------------------
                         elsif i_left_button = '1' then
                             if r_left_counter < pc_SS_SPEED then
                                 r_left_counter <= r_left_counter + 1;
@@ -60,9 +68,11 @@ architecture RTL of movement_spaceSheep is
                             r_right_counter <= 0;
 
                         else
+                            -------------------------------------------------
+                            --Have used two counter for preventing conflicts
+                            --------------------------------------------------
                             r_left_counter <= 0;
                             r_right_counter <= 0;
-                            
                         end if;
                     end if;
                 end if;
