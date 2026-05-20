@@ -16,17 +16,17 @@ end space_invaders_SM;
 
 architecture RTL of space_invaders_SM is
     type t_SI_state_machine is (IDLE, GAME_RUNNING, GAME_OVER);
-    signal r_SM : t_space_invaders_SM   :=IDLE;
+    signal r_SM : t_SI_state_machine   :=IDLE;
 
     signal r_start  :   STD_LOGIC   :='0';
     begin
-        process(i_clk) is
+        process(i_clk, i_reset) is
             begin
-                if reset = '1' then
+                if i_reset = '1' then
                     --game resets
                     r_SM <= IDLE;
 
-                elsif rising_edge(i_clk) is
+                elsif rising_edge(i_clk) then
                     case r_SM is
                         when IDLE =>
                             --when in the IDLE, we are in the start frame
@@ -41,7 +41,7 @@ architecture RTL of space_invaders_SM is
                                 r_SM <= GAME_RUNNING;
                             end if;
 
-                        when GAME_RUNNIG =>
+                        when GAME_RUNNING =>
                             --everything start running
                             --invaders start to move from left to right, right to left with slow speed. 
                             --the tank can move from left to right and right to left
@@ -69,7 +69,7 @@ architecture RTL of space_invaders_SM is
                     end if;
                 end process;
 
-            o_run_en <= '1' when r_SM = GAME_RUNNING;
+            o_run_en <= '1' when r_SM = GAME_RUNNING else '0';
 
             --i am using the HDMI protocol for this game => implement VGA interface. HVsync and HDMI ports
             --we are using UART to commiunicate with game, implement UART RX
