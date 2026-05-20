@@ -10,6 +10,7 @@ entity movement_invaders is
         i_clk           :   in      STD_LOGIC;
         i_reset         :   in      STD_LOGIC;
         i_en            :   in      STD_LOGIC;
+		  i_kill_invader	:	in 		unsigned(pc_INV_LIMIT-1 downto 0);
         o_invaders      :   out     pt_invaders_pack
     );
 end movement_invaders;
@@ -131,6 +132,12 @@ architecture RTL of movement_invaders is
                                     end if;
                                 end if;
                             end loop;
+									 
+									 for i in 0 to pc_INV_LIMIT -1 loop
+										if i_kill_invader(i) = '1' then
+											r_invaders(i).ALIVE <= '0';
+										end if;
+										end loop;
                                         
                         end if; --i_en = '1'
                     end if; --i_reset

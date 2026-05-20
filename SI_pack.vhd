@@ -75,8 +75,8 @@ package SI_pack is
   
     
     --parameters of speed
-    constant pc_SS_SPEED        :   integer     :=1000000;  --0.04 Sec (with 25MHz CLK)
-    constant pc_BULLET_SPEED    :   integer     :=2500000;  --0.1 Sec (with 25MHz CLK)
+    constant pc_SS_SPEED        :   integer     :=500000;  --0.04 Sec (with 25MHz CLK)
+    constant pc_BULLET_SPEED    :   integer     :=200000;  
     constant pc_INVS_SPEED      :   integer     :=2000000;  --0.08 Sec (with 25MHz CLK)
 
 

@@ -12,6 +12,7 @@ entity movement_bullet is
         i_en            :   in      STD_LOGIC;
         i_x_ss          :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_bullet_button :   in      STD_LOGIC;
+		  i_kill_bullet	:	 in 		unsigned(pc_BULLET_LIMIT -1 downto 0);
         o_bullets       :   out     pt_bullets_pack
     );
 end movement_bullet;
@@ -62,6 +63,7 @@ architecture RTL of movement_bullet is
                                 if r_bullets(i).ACTIVE = '0' then
                                     r_bullets(i).ACTIVE <= '1';
                                     r_bullets(i).X <= r_x_SS + (pc_SS_WIDTH/2);
+                                    r_bullets(i).Y <= pc_Y_START_BULLET;
                                     exit;
                                 end if;
                             end loop;
@@ -92,6 +94,15 @@ architecture RTL of movement_bullet is
                                     end if;
                                 end if;
                             end loop;
+									 
+									 
+									 for i in 0 to pc_BULLET_LIMIT -1 loop
+										if i_kill_bullet(i) = '1' then
+											r_bullets(i).Y <= pc_Y_START_BULLET;
+											r_bullets(i).ACTIVE <= '0';
+										end if;
+										end loop;
+										
                         end if;
 
                     end if;

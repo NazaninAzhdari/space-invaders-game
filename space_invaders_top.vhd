@@ -34,16 +34,10 @@ architecture RTL of space_invaders_top is
 
 
     signal w_de  :   STD_LOGIC   :='0';
-    signal w_run_en  :   STD_LOGIC   :='0';
     signal w_invaders : pt_invaders_pack;
     signal w_bullets : pt_bullets_pack;
 
-    signal w_draw_invaders : unsigned(pc_INV_LIMIT-1 downto 0);
-    signal w_draw_bullets : unsigned(pc_BULLET_LIMIT -1 downto 0);
-    signal w_draw_SS : STD_LOGIC  :='0';
-	 
-	 constant c_20_bit_zero  :  unsigned(pc_INV_LIMIT-1 downto 0) :=(others=>'0');
-	 constant c_8_bit_zero   :  unsigned(pc_BULLET_LIMIT-1 downto 0) :=(others=>'0');
+
 	 
 
     begin
@@ -108,93 +102,31 @@ architecture RTL of space_invaders_top is
             i_clk=> r_clk25,
             i_reset=> w_reset,
             i_start => w_start,
-            o_run_en => w_run_en
-        );
-
-        -----------------------------------------
-        --movement of space_sheep
-        -----------------------------------------
-        space_sheep_movement: entity work.movement_spaceSheep
-        port map (
-            i_clk=> r_clk25, --25MHZ
-            i_reset=> w_reset,
-            i_en=> w_run_en,
-            i_right_button=> not i_right_btn,
-            i_left_button=> not i_left_btn,
+            i_right_btn => not i_right_btn,
+            i_left_btn => not i_left_btn,
+            i_bullet_btn => not i_bullet_btn,
             i_x => r_x,
-            i_y=> r_y,
-            o_x_start_SS => w_x_start_SS
-        );
-        
-        -----------------------------------------
-        --movement of bullets
-        -----------------------------------------
-        bullet_movement: entity work.movement_bullet
-        port map(
-            i_clk => r_clk25,  --25MHz
-            i_reset => w_reset,
-            i_en => w_run_en,
-            i_x_ss => w_x_start_ss,
-            i_bullet_button => not i_bullet_btn,
+            i_y => r_y,
+            o_x_start_SS => w_x_start_SS,
+            o_invaders => w_invaders,
             o_bullets => w_bullets
         );
-
-        -----------------------------------------
-        --movement of invaders
-        -----------------------------------------
-        invaders_movement: entity work.movement_invaders
-        port map(
-            i_clk => r_clk25,
-            i_reset => w_reset,
-            i_en => w_run_en,
-            o_invaders => w_invaders
-        );
-
-        
-
-        -----------------------------------------
-        --draw space sheep
+            
         ----------------------------------------
-        drawing_SS: entity work.draw_spaceSheep
+        --drawing
+        ----------------------------------------
+        drwing_elements: entity work.draw_top
         port map(
             i_x => r_x,
-            i_y=> r_y,
-            i_x_start_SS => w_x_start_ss,
-            o_draw_SS =>w_draw_SS
-        );
-
-        ----------------------------------------
-        --draw bullets
-        ----------------------------------------
-        drawing_bullets: entity work.draw_bullets
-        port map(
+            i_y => r_y,
+            i_DE => w_DE,
+            i_x_start_SS => w_x_start_SS,
             i_bullets => w_bullets,
-            i_x => r_x,
-            i_y => r_y,
-            o_draw_bullets => w_draw_bullets
+            i_invaders => w_invaders,
+            o_drawing_data_bus => o_hdmi_data_bus
         );
 
-        -----------------------------------------
-        --draw invaders
-        -----------------------------------------
-        drawing_invaders: entity work.draw_invaders
-        port map(
-            i_invaders => w_invaders,
-            i_x => r_x,
-            i_y => r_y,
-            o_draw_invaders => w_draw_invaders
-        );
-		  
-		  o_hdmi_data_bus <= (others=>'1') when w_de = '1' and (w_draw_SS = '1' or w_draw_invaders /=c_20_bit_zero or w_draw_bullets /=c_8_bit_zero) 
-		  else (others=>'0');
-		  
-		  
         o_hdmi_DE <= w_DE;
         o_hdmi_clk <= r_clk25;
-
-
-
-
-
 
     end RTL;
