@@ -47,6 +47,7 @@ package SI_pack is
     
     
     --parameter of invaders
+	 constant pc_X_START_INVS_BORDER :  integer     :=35;
 	constant pc_INV_WIDTH           :  integer     :=16;
     constant pc_INV_HEIGHT          :  integer     :=8;
 	constant pc_SPACE               :  integer     :=2;  --space between horizontal and vertical invaders
@@ -55,23 +56,40 @@ package SI_pack is
     constant pc_INV_ROW2_LIMIT      :  integer     :=pc_INV_ROW1_LIMIT + 5; --10
     constant pc_INV_ROW3_LIMIT      :  integer     :=pc_INV_ROW2_LIMIT + 5; --15
     constant pc_INV_ROW4_LIMIT      :  integer     :=pc_INV_ROW3_LIMIT + 5; --20
-    constant pc_Y_INV_ROW1          :  integer     :=pc_Y_START_BORDER;
-    constant pc_Y_INV_ROW2          :  integer     :=pc_Y_START_BORDER + (pc_INV_HEIGHT) + pc_SPACE;
+    constant pc_Y_INV_ROW1          :  integer     :=pc_Y_START_BORDER + 10;
+    constant pc_Y_INV_ROW2          :  integer     :=pc_Y_INV_ROW1 + (pc_INV_HEIGHT) + pc_SPACE;
     constant pc_Y_INV_ROW3          :  integer     :=pc_Y_INV_ROW2 + (pc_INV_HEIGHT) + pc_SPACE;
     constant pc_Y_INV_ROW4          :  integer     :=pc_Y_INV_ROW3 + (pc_INV_HEIGHT) + pc_SPACE;
-    constant pc_X_START_INVS_BORDER :  integer     :=35;
+	 
+	 constant pc_X_INV_COL1          :  integer     :=pc_X_START_INVS_BORDER;
+    constant pc_X_INV_COL2          :  integer     :=pc_X_INV_COL1 + (pc_INV_WIDTH) + pc_SPACE;
+    constant pc_X_INV_COL3          :  integer     :=pc_X_INV_COL2 + (pc_INV_WIDTH) + pc_SPACE;
+    constant pc_X_INV_COL4          :  integer     :=pc_X_INV_COL3 + (pc_INV_WIDTH) + pc_SPACE;
+	 constant pc_X_INV_COL5          :  integer     :=pc_X_INV_COL4 + (pc_INV_WIDTH) + pc_SPACE;
     
-    
-  
+    --hearts
+    constant pc_H_WIDTH     :   integer     :=7;
+    constant pc_H_HEIGHT    :   integer     :=6;
+    constant pc_Y_START_HEART :  integer     :=5;
+    constant pc_Y_END_HEART :  integer     :=pc_Y_START_HEART + pc_H_HEIGHT;
+    constant pc_X_START_H1 :  integer     :=133;
+    constant pc_X_END_H1 :  integer     :=pc_X_START_H1 + pc_H_WIDTH;
+    constant pc_X_START_H2 :  integer     :=141;
+    constant pc_X_END_H2 :  integer     :=pc_X_START_H2 + pc_H_WIDTH;
+    constant pc_X_START_H3 : integer        :=149;
+    constant pc_X_END_H3 :  integer         :=pc_X_START_H3 + pc_H_WIDTH;
+
     
     --parameters of speed
     constant pc_SS_SPEED        :   integer     :=500000;  --0.04 Sec (with 25MHz CLK)
     constant pc_BULLET_SPEED    :   integer     :=200000;  
     constant pc_INVS_SPEED      :   integer     :=2000000;  --0.08 Sec (with 25MHz CLK)
     constant pc_BURST_SPEED     :   integer     :=1500000; 
-	 constant pc_FRAME_SPEED 		:	integer     :=25000000; --1 sec
+	 constant pc_INV_FRAME_SPEED 		:	integer     :=25000000; --1 sec
      constant pc_TIME_BETWEEN_POISONS:  integer     :=25000000; --1 sec
      constant pc_POISON_SPEED       :   integer     :=500000;
+     constant pc_SS_FRAME_SPEED 		:	integer     :=pc_BURST_SPEED;
+     constant pc_LOOSE_TIME             :   integer     :=25000000; --1 sec
 
 
     type pt_object_spicification is record
@@ -83,6 +101,8 @@ package SI_pack is
     type pt_invaders_pack is array(0 to pc_INV_LIMIT -1) of pt_object_spicification;
     type ROM5_15 is array (0 to 4) of unsigned(0 to 14);
     type ROM8_16 is array (0 to 7) of unsigned(0 to 15);
+    type ROM6_7 is array (0 to 5) of unsigned(0 to 6);
+
 
     constant pc_space_sheep   :  ROM5_15 :=(
         "000000010000000",
@@ -90,6 +110,22 @@ package SI_pack is
         "001111111111100",
         "111111111111111",
         "111111111111111"
+    );
+
+    constant pc_dead_SS_f1   :  ROM5_15 :=(
+        "001010010100001",
+        "000101001001001",
+        "010001111001010",
+        "100011111111100",
+        "001111111111110"
+    );
+
+    constant pc_dead_SS_f2   :  ROM5_15 :=(
+        "100101000100100",
+        "011010010100100",
+        "100001111000011",
+        "010011111111101",
+        "001111111111110"
     );
 
     constant pc_invader_1_f1  :  ROM8_16  :=(
@@ -193,7 +229,227 @@ package SI_pack is
         
     );
 
+    constant pc_heart   :  ROM6_7   :=(
+        "0110110",
+        "1111111",
+        "1111111",
+        "0111110",
+        "0011100",
+        "0001000"
+    );
 
+constant pc_initial_invaders  :  pt_invaders_pack :=(
+    0 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '1'
+    ),
+    1 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '1'
+    ),
+    2 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '1'
+    ),
+    3 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '1'
+    ),
+    4 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '1'
+    ),
+
+    5 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '1'
+    ),
+    6 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '1'
+    ),
+    7 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '1'
+    ),
+    8 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '1'
+    ),
+    9 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '1'
+    ),
+
+    10 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '1'
+    ),
+    11 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '1'
+    ),
+    12 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '1'
+    ),
+    13 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '1'
+    ),
+    14 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '1'
+    ),
+    
+    15 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '1'
+    ),
+    16 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '1'
+    ),
+    17 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '1'
+    ),
+    18 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '1'
+    ),
+    19 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '1'
+    )
+);
+
+
+constant pc_initial_poisons  :  pt_invaders_pack :=(
+    0 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '0'
+    ),
+    1 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '0'
+    ),
+    2 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '0'
+    ),
+    3 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '0'
+    ),
+    4 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW1,
+        ACTIVE => '0'
+    ),
+
+    5 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '0'
+    ),
+    6 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '0'
+    ),
+    7 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '0'
+    ),
+    8 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '0'
+    ),
+    9 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW2,
+        ACTIVE => '0'
+    ),
+
+    10 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '0'
+    ),
+    11 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '0'
+    ),
+    12 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '0'
+    ),
+    13 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '0'
+    ),
+    14 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW3,
+        ACTIVE => '0'
+    ),
+    
+    15 => (
+        X => pc_X_INV_COL1,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '0'
+    ),
+    16 => (
+        X => pc_X_INV_COL2,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '0'
+    ),
+    17 => (
+        X => pc_X_INV_COL3,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '0'
+    ),
+    18 => (
+        X => pc_X_INV_COL4,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '0'
+    ),
+    19 => (
+        X => pc_X_INV_COL5,
+        Y => pc_Y_INV_ROW4,
+        ACTIVE => '0'
+    )
+);
 
 end package;
 

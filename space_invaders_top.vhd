@@ -38,7 +38,9 @@ architecture RTL of space_invaders_top is
     signal w_bullets : pt_bullets_pack;
 
     signal w_run_en  :   STD_LOGIC   :='0';
+    signal w_loose_live_en :   STD_LOGIC   :='0';
     signal w_poisons : pt_invaders_pack;
+    signal w_lives : integer;
 
 
     begin
@@ -112,7 +114,9 @@ architecture RTL of space_invaders_top is
             o_invaders => w_invaders,
             o_bullets => w_bullets,
             o_poisons => w_poisons,
-            o_run_en => w_run_en
+            o_run_en => w_run_en,
+            o_loose_live_en => w_loose_live_en,
+            o_lives => w_lives
         );
             
         ----------------------------------------
@@ -122,6 +126,8 @@ architecture RTL of space_invaders_top is
         port map(
             i_clk => r_clk25,
             i_en => w_run_en,
+            i_Loose_live_en => w_loose_live_en,
+            i_lives => w_lives,
             i_x => r_x,
             i_y => r_y,
             i_DE => w_DE,

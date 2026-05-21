@@ -26,7 +26,7 @@ architecture RTL of draw_invaders is
     signal r_burst_counter : integer range 0 to pc_BURST_SPEED :=0;
 
     signal r_frame : STD_LOGIC  :='0';
-    signal r_frame_counter : integer range 0 to pc_FRAME_SPEED :=0;
+    signal r_frame_counter : integer range 0 to pc_INV_FRAME_SPEED :=0;
 
 
     begin
@@ -106,7 +106,7 @@ architecture RTL of draw_invaders is
             begin
                 if rising_edge(i_clk) then
                     if i_en = '1' then
-                        if r_frame_counter < pc_FRAME_SPEED then
+                        if r_frame_counter < pc_INV_FRAME_SPEED then
                             r_frame_counter <= r_frame_counter + 1;
                         else
                             r_frame_counter <= 0;

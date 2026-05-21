@@ -19,12 +19,14 @@ entity space_invaders_SM is
         o_invaders      :   out     pt_invaders_pack;
         o_bullets       :   out     pt_bullets_pack;
         o_poisons       :   out     pt_invaders_pack;
-        o_run_en        :   out     STD_LOGIC
+        o_run_en        :   out     STD_LOGIC;
+        o_loose_live_en :   out     STD_LOGIC;
+        o_lives         :   out     integer
     );
 end space_invaders_SM;
 
 architecture RTL of space_invaders_SM is
-    type t_SI_state_machine is (IDLE, GAME_RUNNING, WINNING, GAME_OVER);
+    type t_SI_state_machine is (IDLE, GAME_RUNNING, LOOSE_LIVE, WINNING, GAME_OVER);
     signal r_SM         :   t_SI_state_machine                                  :=IDLE;
     signal r_start      :   STD_LOGIC                                           :='0';
     
@@ -41,16 +43,23 @@ architecture RTL of space_invaders_SM is
 	 
 	 constant c_20bit_one : unsigned(pc_INV_LIMIT-1 downto 0) :=(others=>'1');
 
+     signal r_loose_live_en      :   STD_LOGIC        :='0';
+     signal r_lives : integer range 0 to 3 :=3;
+
+     signal r_counter : integer range 0 to pc_LOOSE_TIME :=0;
+
     begin
-        process(i_clk, i_reset) is
+        process(i_clk) is
             begin
                 if rising_edge(i_clk) then
+					 r_start <= i_start;
 						if i_reset = '1' then
                     --game resets
                     r_SM <= IDLE;
-						  r_kill_invader <= (others=>'0');
-						  r_kill_bullet <= (others=>'0');
+					r_kill_invader <= (others=>'0');
+					r_kill_bullet <= (others=>'0');
                     r_kill_poison <= (others=>'0');
+                    r_lives <= 3;
 						  
 						  
 						else --i_reset = '0'
@@ -94,14 +103,16 @@ architecture RTL of space_invaders_SM is
                                 end if;
                             end loop;
 
-                            for i in 0 to pc_BULLET_LIMIT-1 loop
+                            for i in 0 to pc_INV_LIMIT-1 loop
                                 if w_poisons(i).Active = '1' then
-                                    if w_poisons(i).X >= r_x_start_SS and w_poisons(i).X < r_X_start_SS + pc_SS_WIDTH
-                                        and w_poisons(i).Y >= pc_Y_start_SS + 2 and w_poisons(i).Y <= pc_Y_END_SS then
+											 if w_poisons(i).Y >= pc_Y_start_SS and w_poisons(i).Y <= pc_Y_END_SS 
+                                    and w_poisons(i).X >= r_x_start_SS and w_poisons(i).X < r_X_start_SS + pc_SS_WIDTH then
+                                         
                                             r_kill_poison(i) <= '1';
-                                            --r_kill_SS <= '1';
-														  r_SM <= GAME_OVER;
+                                            --kill_SS 
+															r_SM <= LOOSE_LIVE;
                                     end if;
+												
                                 else
                                     r_kill_poison(i) <= '0';    
                                 end if;
@@ -119,6 +130,20 @@ architecture RTL of space_invaders_SM is
                             if r_kill_invader = c_20bit_one then
                                 r_SM <= WINNING;
                             end if;
+
+                        when LOOSE_LIVE =>
+                            if r_counter < pc_LOOSE_TIME then
+                                r_counter <= r_counter + 1;
+                            else
+                                r_counter <= 0;
+                                if r_lives > 1 then
+                                    r_lives <= r_lives - 1;
+                                    r_SM <= GAME_RUNNING;
+                                else
+												r_lives <= r_lives - 1;
+                                    r_SM <= GAME_OVER;
+                                end if;
+                            end if;
 								
 						when WINNING =>
 										--wiinng the game
@@ -134,15 +159,15 @@ architecture RTL of space_invaders_SM is
 						  end if;
             end process;
 
-            process(i_clk) is
-                begin
-                    if rising_edge(i_clk) then
-                        r_start <= i_start;
-                    end if;
-                end process;
+           
 
+            
+            r_loose_live_en <= '1' when r_SM = LOOSE_LIVE else '0';
+            o_loose_live_en <= r_loose_live_en;
             r_run_en <= '1' when r_SM = GAME_RUNNING else '0';
             o_run_en <= r_run_en;
+
+            o_lives <= r_lives;
 
             --i am using the HDMI protocol for this game => implement VGA interface. HVsync and HDMI ports
             --we are using UART to commiunicate with game, implement UART RX

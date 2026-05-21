@@ -30,21 +30,26 @@ architecture RTL of movement_bullet is
     begin
         r_x_SS <= to_integer(i_x_SS);
 
-        process(i_clk, i_reset) is
+        process(i_clk) is
             begin
-                if i_reset = '1' then
-                    -----------------------------------------------------------------
-                    --The whole loop happens in oly one clock cycle but in sequence.
-                    --All the Bullets get initialized in one clock cycle.
-                    ----------------------------------------------------------------
-                    for i in 0 to pc_BULLET_LIMIT-1 loop
-                        r_bullets(i).X <= pc_X_START_BULLET;
-                        r_bullets(i).Y <= pc_Y_START_BULLET;
-                        r_bullets(i).ACTIVE <= '0';
-                    end loop;
-                    r_counter <= 0;
-
-                elsif rising_edge(i_clk) then
+                
+					if rising_edge(i_clk) then
+					r_bullet_button <= i_bullet_button;
+							if i_reset = '1' then
+								  -----------------------------------------------------------------
+								  --The whole loop happens in oly one clock cycle but in sequence.
+								  --All the Bullets get initialized in one clock cycle.
+								  ----------------------------------------------------------------
+								  for i in 0 to pc_BULLET_LIMIT-1 loop
+										r_bullets(i).X <= pc_X_START_BULLET;
+										r_bullets(i).Y <= pc_Y_START_BULLET;
+										r_bullets(i).ACTIVE <= '0';
+								  end loop;
+								  r_counter <= 0;
+								  
+							
+							
+				else
                     if i_en = '1' then
                         ---------------------------------------------------------------------------------------------------------------
                         --if button pressed and released, the whole loop starts and it happens in one clock cycle but in sequence
@@ -96,25 +101,23 @@ architecture RTL of movement_bullet is
                             end loop;
 									 
 									 
-									 for i in 0 to pc_BULLET_LIMIT -1 loop
+									 
+										
+                        end if; --end of i_en = '1'
+								
+								for i in 0 to pc_BULLET_LIMIT -1 loop
 										if i_kill_bullet(i) = '1' then
 											r_bullets(i).Y <= pc_Y_START_BULLET;
 											r_bullets(i).ACTIVE <= '0';
 										end if;
-										end loop;
-										
-                        end if;
+								end loop;
 
                     end if;
                 end if;
+					 end if;
             end process;
 
-            process(i_clk) is
-                begin
-                    if rising_edge(i_clk) then
-                        r_bullet_button <= i_bullet_button;
-                    end if;
-                end process;
+
 
             o_bullets <= r_bullets;
 

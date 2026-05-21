@@ -24,17 +24,19 @@ architecture RTL of movement_spaceSheep is
     signal r_x_start_SS     :   integer range pc_X_START_BORDER to pc_X_END_BORDER  :=pc_X_INITIAL_SS;
 
     begin
-        process(i_clk, i_reset) is
+        process(i_clk) is
             begin
-                -----------------------------------------------------------------------------
-                --by restting the game, the space-sheep will be placed in its initial place
-                -----------------------------------------------------------------------------
-                if i_reset = '1' then 
-                    r_x_start_SS <= pc_X_INITIAL_SS;
-                    r_right_counter <= 0;
-                    r_left_counter <= 0;
-
-                elsif rising_edge(i_clk) then
+                if rising_edge(i_clk) then
+								-----------------------------------------------------------------------------
+							 --by restting the game, the space-sheep will be placed in its initial place
+							 -----------------------------------------------------------------------------
+							 if i_reset = '1' then 
+								  r_x_start_SS <= pc_X_INITIAL_SS;
+								  r_right_counter <= 0;
+								  r_left_counter <= 0;
+								  
+						else
+					
                     if i_en = '1' then
                         -------------------------------------------------------------------------------------------
                         --if right button pressed, space-sheep moves towards the right side, untill the end border
@@ -73,6 +75,7 @@ architecture RTL of movement_spaceSheep is
                         end if;
                     end if;
                 end if;
+					 end if;
             end process;
 
             o_x_start_SS <= to_unsigned(r_x_start_SS, o_x_start_SS'length);

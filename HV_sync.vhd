@@ -22,13 +22,14 @@ architecture RTL of HV_sync is
     signal r_Y  :   integer range 0 to pc_V_TOTAL -1  :=0;
 
     begin
-        process(i_clk25, i_reset) is
+        process(i_clk25) is
             begin
-                if i_reset = '1' then
+                if rising_edge(i_clk25) then
+						if i_reset = '1' then
                     r_x <= 0;
                     r_y <= 0;
-                
-                elsif rising_edge(i_clk25) then
+						 
+						else
                     if r_y < pc_V_TOTAL-1 then 
                         if r_x < pc_H_TOTAL -1 then
                             r_x <= r_x + 1;
@@ -40,6 +41,8 @@ architecture RTL of HV_sync is
                         r_y <= 0;
                     end if;
                 end if;
+					 end if;
+					 
         end process;
 
         o_HS <= '0' when (r_x >= pc_H_ACTIVE + pc_H_FP) and (r_x < pc_H_TOTAL - pc_H_BP) else '1';

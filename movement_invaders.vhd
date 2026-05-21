@@ -16,7 +16,7 @@ entity movement_invaders is
 end movement_invaders;
 
 architecture RTL of movement_invaders is
-    signal r_invaders   : pt_invaders_pack;  --Have to reset the game to see the invaders, not initialized.
+    signal r_invaders   : pt_invaders_pack  :=pc_INITIAL_INVADERS;  --Have to reset the game to see the invaders, not initialized.
     signal r_x_counter  : integer range 0 to pc_INVS_SPEED  :=0;
     signal r_direction  : STD_LOGIC                         :='0';
     signal w_direction  : STD_LOGIC                         :='0';
@@ -27,7 +27,8 @@ architecture RTL of movement_invaders is
         process(i_clk) is
 
             begin
-                if rising_edge(i_clk) then	
+                if rising_edge(i_clk) then
+					w_direction <= r_direction; 
 					if i_reset = '1' then --Since synthesis tool was trying to make a latch, i put the reset to be synchhronous
                         ---------------------------------------------------------------
                         --Resetting the x , y cordinate of invaders:
@@ -35,29 +36,7 @@ architecture RTL of movement_invaders is
                         --the whole loops happens in one clock cycle.
                         --so after one clock cycle all the invaders has been initialized
                         -----------------------------------------------------------------
-                        for i in 0 to pc_INV_ROW1_LIMIT -1 loop
-                            r_invaders(i).X <= pc_X_START_INVS_BORDER + i*(pc_INV_WIDTH + pc_SPACE);
-                            r_invaders(i).Y <= pc_Y_INV_ROW1;
-                                    r_invaders(i).ACTIVE <= '1';
-                        end loop;
-
-                        for i in pc_INV_ROW1_LIMIT to pc_INV_ROW2_LIMIT -1 loop
-                            r_invaders(i).X <= pc_X_START_INVS_BORDER + (i- pc_INV_ROW1_LIMIT)*(pc_INV_WIDTH + pc_SPACE);
-                            r_invaders(i).Y <= pc_Y_INV_ROW2;
-                                    r_invaders(i).ACTIVE <= '1';
-                        end loop;
-
-                        for i in pc_INV_ROW2_LIMIT to pc_INV_ROW3_LIMIT -1 loop
-                            r_invaders(i).X <= pc_X_START_INVS_BORDER + (i- pc_INV_ROW2_LIMIT)*(pc_INV_WIDTH + pc_SPACE);
-                            r_invaders(i).Y <= pc_Y_INV_ROW3;
-                                    r_invaders(i).ACTIVE <= '1';
-                        end loop;
-
-                        for i in pc_INV_ROW3_LIMIT to pc_INV_ROW4_LIMIT -1 loop
-                            r_invaders(i).X <= pc_X_START_INVS_BORDER + (i- pc_INV_ROW3_LIMIT)*(pc_INV_WIDTH + pc_SPACE);
-                            r_invaders(i).Y <= pc_Y_INV_ROW4;
-                                    r_invaders(i).ACTIVE <= '1';
-                        end loop;
+                        r_invaders <= pc_INITIAL_INVADERS;
 
                         r_direction <= '0';
 						  
@@ -133,24 +112,22 @@ architecture RTL of movement_invaders is
                                 end if;
                             end loop;
 									 
-									 for i in 0 to pc_INV_LIMIT -1 loop
+									 
+                                        
+                        end if; --i_en = '1'
+								
+								for i in 0 to pc_INV_LIMIT -1 loop
 										if i_kill_invader(i) = '1' then
 											r_invaders(i).ACTIVE <= '0';
 										end if;
 										end loop;
-                                        
-                        end if; --i_en = '1'
+										
                     end if; --i_reset
                 end if; --rising_edge(i_clk)
             end process;
 
 
-            process(i_clk) is
-                begin
-					 if rising_edge(i_clk) then
-                    w_direction <= r_direction;
-                    end if;
-                end process;
+ 
 					 
 			o_invaders <= r_invaders;
     end RTL;
