@@ -44,13 +44,7 @@ package SI_pack is
 	constant pc_X_START_BULLET  :   integer     :=pc_X_MIDDLE_BORDER;
     constant pc_Y_START_BULLET  :   integer     :=pc_Y_START_SS;
     constant pc_BULLET_LIMIT    :   integer     :=8;
-    type pt_bullets is record
-        X       :   integer;
-        Y       :   integer;
-        ACTIVE  :   STD_LOGIC;
-    end record;
-    type pt_bullets_pack is array (0 to pc_BULLET_LIMIT -1) of pt_bullets;
- 
+    
     
     --parameter of invaders
 	constant pc_INV_WIDTH           :  integer     :=16;
@@ -66,12 +60,8 @@ package SI_pack is
     constant pc_Y_INV_ROW3          :  integer     :=pc_Y_INV_ROW2 + (pc_INV_HEIGHT) + pc_SPACE;
     constant pc_Y_INV_ROW4          :  integer     :=pc_Y_INV_ROW3 + (pc_INV_HEIGHT) + pc_SPACE;
     constant pc_X_START_INVS_BORDER :  integer     :=35;
-    type pt_invaders is record
-        X     :   integer;
-        Y     :   integer;
-        ALIVE :   STD_LOGIC;
-    end record;
-    type pt_invaders_pack is array(0 to pc_INV_LIMIT -1) of pt_invaders;
+    
+    
   
     
     --parameters of speed
@@ -80,8 +70,17 @@ package SI_pack is
     constant pc_INVS_SPEED      :   integer     :=2000000;  --0.08 Sec (with 25MHz CLK)
     constant pc_BURST_SPEED     :   integer     :=1500000; 
 	 constant pc_FRAME_SPEED 		:	integer     :=25000000; --1 sec
+     constant pc_TIME_BETWEEN_POISONS:  integer     :=25000000; --1 sec
+     constant pc_POISON_SPEED       :   integer     :=500000;
 
 
+    type pt_object_spicification is record
+        X       :   integer;
+        Y       :   integer;
+        ACTIVE  :   STD_LOGIC;
+    end record;
+    type pt_bullets_pack is array (0 to pc_BULLET_LIMIT -1) of pt_object_spicification;
+    type pt_invaders_pack is array(0 to pc_INV_LIMIT -1) of pt_object_spicification;
     type ROM5_15 is array (0 to 4) of unsigned(0 to 14);
     type ROM8_16 is array (0 to 7) of unsigned(0 to 15);
 

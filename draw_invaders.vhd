@@ -21,7 +21,7 @@ architecture RTL of draw_invaders is
     signal r_x  :   integer range 0 to pc_GAME_WIDTH -1 :=0;
     signal r_y  :   integer range 0 to pc_GAME_HEIGHT -1 :=0;
 
-    signal r_invaders_aliveness : unsigned(pc_INV_LIMIT -1 downto 0)  :=(others=>'1');
+    signal r_invaders_ACTIVEness : unsigned(pc_INV_LIMIT -1 downto 0)  :=(others=>'1');
     signal r_draw_burst : unsigned(pc_INV_LIMIT -1 downto 0) :=(others=>'0');
     signal r_burst_counter : integer range 0 to pc_BURST_SPEED :=0;
 
@@ -41,12 +41,12 @@ architecture RTL of draw_invaders is
 		  begin
 
                 o_draw_invaders(i) <= pc_invader_1_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
-                                        when i_invaders(i).ALIVE = '1' and r_frame = '0'
+                                        when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else
 													 
                                      pc_invader_1_f2(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
-                                        when i_invaders(i).ALIVE = '1'
+                                        when i_invaders(i).ACTIVE = '1'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH
                                         else '0';
@@ -57,12 +57,12 @@ architecture RTL of draw_invaders is
 		  begin
 
                 o_draw_invaders(i) <= pc_invader_2_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
-                                        when i_invaders(i).ALIVE = '1' and r_frame = '0'
+                                        when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else
 													 
                                       pc_invader_2_f2(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X )
-                                        when i_invaders(i).ALIVE = '1'
+                                        when i_invaders(i).ACTIVE = '1'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH
                                         else '0';
@@ -72,12 +72,12 @@ architecture RTL of draw_invaders is
         gen_invaders_row3: for i in pc_INV_ROW2_LIMIT to pc_INV_ROW3_LIMIT-1 generate
 		  begin
                 o_draw_invaders(i) <= pc_invader_3_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
-                                        when i_invaders(i).ALIVE = '1' and r_frame = '0'
+                                        when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else
 													 
                                       pc_invader_3_f2(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X )
-                                        when i_invaders(i).ALIVE = '1'
+                                        when i_invaders(i).ACTIVE = '1'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH
                                         else '0';
@@ -88,12 +88,12 @@ architecture RTL of draw_invaders is
         gen_invaders_row4: for i in pc_INV_ROW3_LIMIT to pc_INV_ROW4_LIMIT-1 generate
 		  begin
                 o_draw_invaders(i) <= pc_invader_4_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
-                                        when i_invaders(i).ALIVE = '1' and r_frame = '0'
+                                        when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else
 													 
                                       pc_invader_4_f2(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
-                                        when i_invaders(i).ALIVE = '1'
+                                        when i_invaders(i).ACTIVE = '1'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH
                                         else '0';
@@ -116,18 +116,18 @@ architecture RTL of draw_invaders is
                 end if;
             end process;
         ----------------------------------------------------------------------------------------------------------------------
-        --in falling edge of the ALIVE we determine that an invade has killed, so we draw a burst at that particular location
+        --in falling edge of the ACTIVE we determine that an invade has killed, so we draw a burst at that particular location
         --after some moment(PC_BURST_SPEED) , the bursting ends.
         -----------------------------------------------------------------------------------------------------------------------
         process(i_clk) is
             begin
                 if rising_edge(i_clk) then
                     for i in 0 to pc_INV_LIMIT -1 loop
-                        r_invaders_aliveness(i) <= i_invaders(i).ALIVE;
+                        r_invaders_ACTIVEness(i) <= i_invaders(i).ACTIVE;
                     end loop;
 
                     for i in 0 to pc_INV_LIMIT -1 loop
-                        if i_invaders(i).ALIVE = '0' and r_invaders_aliveness(i) = '1' then
+                        if i_invaders(i).ACTIVE = '0' and r_invaders_ACTIVEness(i) = '1' then
 										r_draw_burst(i) <= '1';
                         end if;
                         

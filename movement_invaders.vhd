@@ -38,25 +38,25 @@ architecture RTL of movement_invaders is
                         for i in 0 to pc_INV_ROW1_LIMIT -1 loop
                             r_invaders(i).X <= pc_X_START_INVS_BORDER + i*(pc_INV_WIDTH + pc_SPACE);
                             r_invaders(i).Y <= pc_Y_INV_ROW1;
-                                    r_invaders(i).ALIVE <= '1';
+                                    r_invaders(i).ACTIVE <= '1';
                         end loop;
 
                         for i in pc_INV_ROW1_LIMIT to pc_INV_ROW2_LIMIT -1 loop
                             r_invaders(i).X <= pc_X_START_INVS_BORDER + (i- pc_INV_ROW1_LIMIT)*(pc_INV_WIDTH + pc_SPACE);
                             r_invaders(i).Y <= pc_Y_INV_ROW2;
-                                    r_invaders(i).ALIVE <= '1';
+                                    r_invaders(i).ACTIVE <= '1';
                         end loop;
 
                         for i in pc_INV_ROW2_LIMIT to pc_INV_ROW3_LIMIT -1 loop
                             r_invaders(i).X <= pc_X_START_INVS_BORDER + (i- pc_INV_ROW2_LIMIT)*(pc_INV_WIDTH + pc_SPACE);
                             r_invaders(i).Y <= pc_Y_INV_ROW3;
-                                    r_invaders(i).ALIVE <= '1';
+                                    r_invaders(i).ACTIVE <= '1';
                         end loop;
 
                         for i in pc_INV_ROW3_LIMIT to pc_INV_ROW4_LIMIT -1 loop
                             r_invaders(i).X <= pc_X_START_INVS_BORDER + (i- pc_INV_ROW3_LIMIT)*(pc_INV_WIDTH + pc_SPACE);
                             r_invaders(i).Y <= pc_Y_INV_ROW4;
-                                    r_invaders(i).ALIVE <= '1';
+                                    r_invaders(i).ACTIVE <= '1';
                         end loop;
 
                         r_direction <= '0';
@@ -109,17 +109,17 @@ architecture RTL of movement_invaders is
 
                             ---------------------------------------------------------------------
                             --The whole loop happens in one clock cycle.
-                            --It goes through all the alive invaders. By detecting the first invader that 
+                            --It goes through all the ACTIVE invaders. By detecting the first invader that 
                             --has been reached the left/right border, it drives r_hit_left/right high and exits the loop. 
                             --It will not check the remaining invaders after exiting the loop untll the next clock cycle.
-                            --In the next clock cycle it start again and goes through all the alive invaders.
+                            --In the next clock cycle it start again and goes through all the ACTIVE invaders.
                             --Since the x cordinate of invaders move every pc_INV_SPEED clk cycles, 
                             --then the x cordinate of invedar is in border area for pc_INV_SPEED clk cycles.
                             --So the r_hit_left/right will be high for almost pc_INV_SPEED clk cycles.
                             --After moving the x cordinate from border area, r_hit_left/right becomes zero.
                             ----------------------------------------------------------------------------------------------------------      
                             for i in 0 to pc_INV_LIMIT-1 loop
-                                if r_invaders(i).ALIVE = '1' then
+                                if r_invaders(i).ACTIVE = '1' then
                                     if r_invaders(i).X  <= pc_X_START_BORDER then
                                             r_hit_left <= '1';
                                             exit;
@@ -135,7 +135,7 @@ architecture RTL of movement_invaders is
 									 
 									 for i in 0 to pc_INV_LIMIT -1 loop
 										if i_kill_invader(i) = '1' then
-											r_invaders(i).ALIVE <= '0';
+											r_invaders(i).ACTIVE <= '0';
 										end if;
 										end loop;
                                         

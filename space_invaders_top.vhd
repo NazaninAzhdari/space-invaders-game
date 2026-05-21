@@ -38,7 +38,7 @@ architecture RTL of space_invaders_top is
     signal w_bullets : pt_bullets_pack;
 
     signal w_run_en  :   STD_LOGIC   :='0';
-
+    signal w_poisons : pt_invaders_pack;
 
 
     begin
@@ -111,6 +111,7 @@ architecture RTL of space_invaders_top is
             o_x_start_SS => w_x_start_SS,
             o_invaders => w_invaders,
             o_bullets => w_bullets,
+            o_poisons => w_poisons,
             o_run_en => w_run_en
         );
             
@@ -127,6 +128,7 @@ architecture RTL of space_invaders_top is
             i_x_start_SS => w_x_start_SS,
             i_bullets => w_bullets,
             i_invaders => w_invaders,
+            i_poisons => w_poisons,
             o_drawing_data_bus => o_hdmi_data_bus
         );
 
