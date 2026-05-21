@@ -17,7 +17,8 @@ entity space_invaders_SM is
         i_y             :   in      unsigned(pc_GAME_BITS-1 downto 0);
         o_x_start_SS    :   out     unsigned(pc_GAME_BITS-1 downto 0);
         o_invaders      :   out     pt_invaders_pack;
-        o_bullets       :   out     pt_bullets_pack
+        o_bullets       :   out     pt_bullets_pack;
+        o_run_en        :   out     STD_LOGIC
     );
 end space_invaders_SM;
 
@@ -117,6 +118,7 @@ architecture RTL of space_invaders_SM is
                 end process;
 
             r_run_en <= '1' when r_SM = GAME_RUNNING else '0';
+            o_run_en <= r_run_en;
 
             --i am using the HDMI protocol for this game => implement VGA interface. HVsync and HDMI ports
             --we are using UART to commiunicate with game, implement UART RX

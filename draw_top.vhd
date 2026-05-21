@@ -7,6 +7,8 @@ use work.SI_pack.ALL;
 
 entity draw_top is
     port (
+        i_clk               :   in      STD_LOGIC;
+        i_en                :   in      STD_LOGIC;
         i_x                 :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_y                 :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_DE                :   in      STD_LOGIC;
@@ -24,6 +26,8 @@ architecture RTL of draw_top is
 
     constant c_20bit_zero  :  unsigned(pc_INV_LIMIT-1 downto 0)     :=(others=>'0');
 	constant c_8bit_zero   :  unsigned(pc_BULLET_LIMIT-1 downto 0)  :=(others=>'0');
+
+    signal w_draw_burst_invaders  :   unsigned(pc_INV_LIMIT-1 downto 0)       :=(others=>'0');
     begin
         -----------------------------------------
         --draw space sheep
@@ -52,14 +56,17 @@ architecture RTL of draw_top is
         -----------------------------------------
         drawing_invaders: entity work.draw_invaders
         port map(
+            i_clk => i_clk,
+            i_en => i_en,
             i_invaders => i_invaders,
             i_x => i_x,
             i_y => i_y,
-            o_draw_invaders => w_draw_invaders
+            o_draw_invaders => w_draw_invaders,
+            o_draw_burst_invaders => w_draw_burst_invaders
         );
 
         o_drawing_data_bus <= (others=>'0') when i_de = '1' and 
-                                        (w_draw_SS = '1' or w_draw_invaders /=c_20bit_zero or w_draw_bullets /=c_8bit_zero) else
+                                        (w_draw_SS = '1' or w_draw_invaders /=c_20bit_zero or w_draw_bullets /=c_8bit_zero or w_draw_burst_invaders /= c_20bit_zero) else
                             (others=>'1') when i_de = '1' else
                             (others=>'0');
     end RTL;

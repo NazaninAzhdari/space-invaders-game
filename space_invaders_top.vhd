@@ -37,8 +37,9 @@ architecture RTL of space_invaders_top is
     signal w_invaders : pt_invaders_pack;
     signal w_bullets : pt_bullets_pack;
 
+    signal w_run_en  :   STD_LOGIC   :='0';
 
-	 
+
 
     begin
         -----------------------------------
@@ -109,7 +110,8 @@ architecture RTL of space_invaders_top is
             i_y => r_y,
             o_x_start_SS => w_x_start_SS,
             o_invaders => w_invaders,
-            o_bullets => w_bullets
+            o_bullets => w_bullets,
+            o_run_en => w_run_en
         );
             
         ----------------------------------------
@@ -117,6 +119,8 @@ architecture RTL of space_invaders_top is
         ----------------------------------------
         drwing_elements: entity work.draw_top
         port map(
+            i_clk => r_clk25,
+            i_en => w_run_en,
             i_x => r_x,
             i_y => r_y,
             i_DE => w_DE,
