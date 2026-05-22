@@ -12,7 +12,7 @@ entity movement_bullet is
         i_en            :   in      STD_LOGIC;
         i_x_ss          :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_bullet_button :   in      STD_LOGIC;
-		  i_kill_bullet	:	 in 		unsigned(pc_BULLET_LIMIT -1 downto 0);
+		i_kill_bullet	:	 in 	unsigned(pc_BULLET_LIMIT -1 downto 0);
         o_bullets       :   out     pt_bullets_pack
     );
 end movement_bullet;
@@ -63,7 +63,7 @@ architecture RTL of movement_bullet is
                         --since they have been shooted by one clock cycle apart, their x and y would be the same.
                         --so you only see one bullet. but its actully all the bullets that they are overlapping.
                         ----------------------------------------------------------------------------------------------------------------
-                        if i_bullet_button = '0' and r_bullet_button = '1' then
+                        if i_bullet_button = '1' and r_bullet_button = '0' then --i changed it to rising edge for testing uart
                             for i in 0 to pc_BULLET_LIMIT-1 loop
                                 if r_bullets(i).ACTIVE = '0' then
                                     r_bullets(i).ACTIVE <= '1';

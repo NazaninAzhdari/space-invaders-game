@@ -56,6 +56,7 @@ architecture RTL of space_invaders_SM is
     signal r_lives         :    integer range 0 to 3                            :=3;
     signal r_counter       :    integer range 0 to pc_LOOSE_TIME                :=0;
     constant c_20bit_one   : unsigned(pc_INV_LIMIT-1 downto 0)                  :=(others=>'1');
+    signal r_SM_reset : STD_LOGIC  :='0';
 
     begin
         process(i_clk) is
@@ -64,20 +65,22 @@ architecture RTL of space_invaders_SM is
 					r_start <= i_start;
 					if i_reset = '1' then
                         --game gets reset
+                        r_SM_reset <= '1';	
+
                         r_SM <= IDLE;
                         r_kill_invader <= (others=>'0');
                         r_kill_bullet <= (others=>'0');
                         r_kill_poison <= (others=>'0');
                         r_lives <= 3;
                         r_ufo_active <= '1';
-								
+							
 						    
 					else --if i_reset = '0'
 					 
                         case r_SM is
                             when IDLE =>
                                 --Start Frame of the Game
-										  
+								r_SM_reset <= '0';		  
                                 r_kill_invader <= (others=>'0');
                                 r_kill_bullet <= (others=>'0');
                                 r_kill_poison <= (others=>'0');
@@ -85,7 +88,7 @@ architecture RTL of space_invaders_SM is
                                 r_ufo_active <= '1';  
 
                                 --By falling edge of the start switch, game starts.
-                                if i_start = '0' and r_start = '1' then
+                                if i_start = '1' and r_start = '0' then --i changed it to rising edge for testing
                                     r_SM <= GAME_RUNNING;
                                 end if;
 
@@ -181,15 +184,17 @@ architecture RTL of space_invaders_SM is
 
                             when WINNING =>
                                 --By falling edge of the start switch, come back to start page.
-                                if i_start = '0' and r_start = '1' then
+                                if i_start = '1' and r_start = '0' then  --NOTEEEEE: changed to rising edge for test
                                     r_SM <= IDLE;
+                                    r_SM_reset <= '1';
                                 end if;
 
                             when game_OVER =>
                                 
                                 --By falling edge of the start switch, come back to start page.
-                                if i_start = '0' and r_start = '1' then
+                                if i_start = '1' and r_start = '0' then  --changed to rising edge for testing uart
                                     r_SM <= IDLE;
+                                    r_SM_reset <= '1';
                                 end if;
 
                             when others =>
@@ -220,7 +225,7 @@ architecture RTL of space_invaders_SM is
         space_sheep_movement: entity work.movement_spaceSheep
         port map (
             i_clk=> i_clk, --25MHZ
-            i_reset=> i_reset,
+            i_reset=> r_SM_reset,
             i_en=> r_run_en,
             i_right_button=> i_right_btn,
             i_left_button=> i_left_btn,
@@ -235,7 +240,7 @@ architecture RTL of space_invaders_SM is
         bullet_movement: entity work.movement_bullet
         port map(
             i_clk => i_clk,  --25MHz
-            i_reset => i_reset,
+            i_reset => r_SM_reset,
             i_en => r_run_en,
             i_x_ss => w_x_start_ss,
             i_bullet_button => i_bullet_btn,
@@ -250,7 +255,7 @@ architecture RTL of space_invaders_SM is
         invaders_movement: entity work.movement_invaders
         port map(
             i_clk => i_clk,
-            i_reset => i_reset,
+            i_reset => r_SM_reset,
             i_en => r_run_en,
 				i_kill_invader => r_kill_invader,
             o_invaders => w_invaders
@@ -263,7 +268,7 @@ architecture RTL of space_invaders_SM is
         poisons_movement: entity work.movement_poison
         port map(
             i_clk => i_clk,
-            i_reset => i_reset,
+            i_reset => r_SM_reset,
             i_en => r_run_en,
             i_invaders => w_invaders,
             i_kill_poison => r_kill_poison,
@@ -277,7 +282,7 @@ architecture RTL of space_invaders_SM is
         ufo_movement: entity work.movement_UFO
         port map(
             i_clk => i_clk,
-            i_reset => i_reset,
+            i_reset => r_SM_reset,
             i_en => r_run_en,
             o_x_start_UFO => w_x_start_UFO
         );
