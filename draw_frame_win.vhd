@@ -25,8 +25,8 @@ architecture RTL of draw_frame_win is
         r_y <= to_integer(i_y(pc_GAME_BITS-1 downto 1)); --divided by two
 
 
-        o_draw_WIN_txt <= pc_winning_txt(r_y - c_Y_START_BORDER)(r_x - c_X_START_BORDER) when
-                            and r_y >= c_Y_START_BORDER and r_y < c_Y_START_BORDER + pc_WIN_TXT_HEIGHT
+        o_draw_WIN_txt <= pc_winner_txt(r_y - c_Y_START_BORDER)(r_x - c_X_START_BORDER) when
+                            r_y >= c_Y_START_BORDER and r_y < c_Y_START_BORDER + pc_WIN_TXT_HEIGHT
                             and r_x >= c_X_START_BORDER and r_x < c_X_START_BORDER + pc_WIN_TXT_WIDTH
                             else '0';
 

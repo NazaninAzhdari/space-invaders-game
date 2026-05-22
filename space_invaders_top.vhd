@@ -8,11 +8,12 @@ use work.SI_pack.ALL;
 entity space_invaders_top is
     port (
         i_clk   :   in      STD_LOGIC;
-        i_reset :   in      STD_LOGIC;
-        i_start :   in      STD_LOGIC;
-        i_right_btn: in     STD_LOGIC;
-        i_left_btn  :   in  STD_LOGIC;
-        i_bullet_btn    :   in  STD_LOGIC;
+        i_reset  :   in      STD_LOGIC;
+		  i_rx_data  :  in  STD_LOGIC;
+		  --i_start_btn :   in      STD_LOGIC;
+        --i_bullet_btn :   in      STD_LOGIC;
+		  --i_left_btn :   in      STD_LOGIC;
+        --i_right_btn :   in      STD_LOGIC;
 
         --hdmi
         o_hdmi_clk  :   out     STD_LOGIC;
@@ -26,7 +27,7 @@ end space_invaders_top;
 
 architecture RTL of space_invaders_top is
     signal r_clk25  :   STD_LOGIC   :='0';
-    signal w_start  :   STD_LOGIC   :='0';
+    
     signal w_reset :   STD_LOGIC   :='0';
     signal w_x, w_y :   unsigned(pc_VGA_BITS-1 downto 0) :=(others=>'0');
     signal r_x, r_y :   unsigned(pc_GAME_BITS-1 downto 0) :=(others=>'0');
@@ -49,6 +50,15 @@ architecture RTL of space_invaders_top is
     signal w_x_start_ufo :  signed(pc_GAME_BITS downto 0) :=(others=>'0');
     signal w_ufo_active :   STD_LOGIC   :='0';
 
+    signal w_RX_parallel_data : unsigned(7 downto 0)  :=(others=>'0');
+
+    signal w_RX_DV  :  STD_LOGIC  :='0';
+
+    signal w_start_btn :   STD_LOGIC   :='0';
+    signal w_bullet_btn :   STD_LOGIC   :='0';
+    signal w_right_btn :   STD_LOGIC   :='0';
+    signal w_left_btn :   STD_LOGIC   :='0'; 
+
     begin
         -----------------------------------
         --dividing the frequency
@@ -63,18 +73,8 @@ architecture RTL of space_invaders_top is
         );
 
         ---------------------------------------
-        --debouncing start and reset switches
+        --debouncing reset switches
         ---------------------------------------
-        debouncing_start_switch : entity work.debounce_filter
-        generic map(
-            g_DEBOUNCE_LIMIT=> pc_DEBOUNCE_LIMIT
-        )
-        port map(
-            i_clk=> i_clk,  --50MHz
-            i_bouncy=> i_start,
-            o_debounced=> w_start
-        );
-
         debouncing_reset_switch : entity work.debounce_filter
         generic map(
             g_DEBOUNCE_LIMIT=> pc_DEBOUNCE_LIMIT
@@ -103,6 +103,37 @@ architecture RTL of space_invaders_top is
         r_y <= w_y(pc_VGA_BITS -1 downto 2); --dividing by 4
 
 
+        ----------------------------------------
+        --UART - RX for communication with Game
+        ----------------------------------------
+        UART: entity work.UART_RX
+        generic map(
+            g_BITS_LIMIT => 8,
+            g_CLKS_PER_BIT => 217   
+        )
+        port map(
+            i_clk => r_clk25,
+            i_data_serial => i_RX_data, 
+            o_data_parallel => w_RX_parallel_data, 
+            o_data_DV => w_RX_DV 
+        );
+		  
+
+
+        -----------------------------------------
+        --RX decoder
+        -----------------------------------------
+        RX_decoder: entity work.RX_decoder
+        port map(
+            i_clk => r_clk25,
+            i_en => w_RX_DV,
+            i_ASCII_code => w_RX_parallel_data,
+            o_start_btn => w_start_btn,
+            o_bullet_btn => w_bullet_btn,
+            o_right_btn => w_right_btn,
+            o_left_btn => w_left_btn
+        );
+
         -----------------------------------------
         --space invaders state machine
         -----------------------------------------
@@ -110,10 +141,10 @@ architecture RTL of space_invaders_top is
         port map(
             i_clk=> r_clk25,
             i_reset=> w_reset,
-            i_start => w_start,
-            i_right_btn => not i_right_btn,
-            i_left_btn => not i_left_btn,
-            i_bullet_btn => not i_bullet_btn,
+            i_start => w_start_btn,
+            i_right_btn => w_right_btn,
+            i_left_btn => w_left_btn,
+            i_bullet_btn => w_bullet_btn,
             i_x => r_x,
             i_y => r_y,
             o_x_start_SS => w_x_start_SS,

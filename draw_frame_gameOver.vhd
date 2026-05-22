@@ -26,7 +26,7 @@ architecture RTL of draw_frame_gameover is
 
 
         o_draw_GO_txt <= pc_game_over_txt(r_y - c_Y_START_BORDER)(r_x - c_X_START_BORDER) when
-                            and r_y >= c_Y_START_BORDER and r_y < c_Y_START_BORDER + pc_GO_TXT_HEIGHT
+                            r_y >= c_Y_START_BORDER and r_y < c_Y_START_BORDER + pc_GO_TXT_HEIGHT
                             and r_x >= c_X_START_BORDER and r_x < c_X_START_BORDER + pc_GO_TXT_WIDTH
                             else '0';
 

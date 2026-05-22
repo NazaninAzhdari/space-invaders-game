@@ -70,12 +70,14 @@ architecture RTL of space_invaders_SM is
                         r_kill_poison <= (others=>'0');
                         r_lives <= 3;
                         r_ufo_active <= '1';
+								
 						    
 					else --if i_reset = '0'
 					 
                         case r_SM is
                             when IDLE =>
                                 --Start Frame of the Game
+										  
                                 r_kill_invader <= (others=>'0');
                                 r_kill_bullet <= (others=>'0');
                                 r_kill_poison <= (others=>'0');
