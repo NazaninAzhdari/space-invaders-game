@@ -7,18 +7,18 @@ use work.SI_pack.ALL;
 
 entity draw_hearts is
     port (
-        i_x         :   in      unsigned(pc_GAME_BITS-1 downto 0);
-        i_y         :   in      unsigned(pc_GAME_BITS-1 downto 0);
-        i_lives     :   in      integer;
-        o_draw_hearts : out     STD_LOGIC
+        i_x             :   in      unsigned(pc_GAME_BITS-1 downto 0);
+        i_y             :   in      unsigned(pc_GAME_BITS-1 downto 0);
+        i_lives         :   in      integer;
+        o_draw_hearts   :   out     STD_LOGIC
     );
 end draw_hearts;
 
 architecture RTL of draw_hearts is
-    signal r_x  :   integer range 0 to pc_GAME_WIDTH -1 :=0;
-    signal r_y  :   integer range 0 to pc_GAME_HEIGHT -1 :=0;
+    signal r_x  :   integer range 0 to pc_GAME_WIDTH -1     :=0;
+    signal r_y  :   integer range 0 to pc_GAME_HEIGHT -1    :=0;
 
-    signal r_draw_H1, r_draw_H2 , r_draw_H3  :  STD_LOGIC  :='0';
+    signal r_draw_H1, r_draw_H2 , r_draw_H3  :  STD_LOGIC   :='0';
 
     begin
         r_x <= to_integer(i_x);

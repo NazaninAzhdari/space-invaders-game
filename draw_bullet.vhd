@@ -15,7 +15,7 @@ entity draw_bullets is
 end draw_bullets;
 
 architecture RTL of draw_bullets is
-    signal r_x  :   integer range 0 to pc_GAME_WIDTH -1 :=0;
+    signal r_x  :   integer range 0 to pc_GAME_WIDTH -1  :=0;
     signal r_y  :   integer range 0 to pc_GAME_HEIGHT -1 :=0;
 
     begin

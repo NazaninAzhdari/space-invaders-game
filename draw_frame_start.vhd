@@ -14,11 +14,11 @@ entity draw_frame_start is
 end draw_frame_start;
 
 architecture RTL of draw_frame_start is
-    signal r_x  :   integer range 0 to pc_GAME_WIDTH -1 :=0;
+    signal r_x  :   integer range 0 to pc_GAME_WIDTH -1  :=0;
     signal r_y  :   integer range 0 to pc_GAME_HEIGHT -1 :=0;
 
-    constant c_X_START_BORDER   :=8;
-    constant c_Y_START_BORDER   :=20;
+    constant c_X_START_BORDER  : integer  :=8;
+    constant c_Y_START_BORDER  : integer  :=20;
 
     begin
         r_x <= to_integer(i_x(pc_GAME_BITS-1 downto 1)); --divided by two

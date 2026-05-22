@@ -15,7 +15,7 @@ end debounce_filter;
 
 architecture RTL of debounce_filter is
     signal  r_counter   :   integer range 0 to g_DEBOUNCE_LIMIT-1 :=0;
-    signal r_debounced  :   STD_LOGIC                             :='0';
+    signal  r_debounced :   STD_LOGIC                             :='0';
     
     begin
         process(i_clk) is

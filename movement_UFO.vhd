@@ -15,7 +15,7 @@ entity movement_UFO is
 end movement_UFO;
 
 architecture RTL of movement_UFO is
-    signal r_x_start_UFO : integer range -100 to 255  :=-100;
+    signal r_x_start_UFO : integer range -255 to 255    :=-255;
     signal r_counter : integer range 0 to pc_UFO_SPEED  :=0;
 
     begin
@@ -23,7 +23,7 @@ architecture RTL of movement_UFO is
             begin
                 if rising_edge(i_clk) then
                     if i_reset = '1' then
-                        r_x_start_ufo <= -100;
+                        r_x_start_ufo <= -255;
 
                     else
                         if i_en = '1' then
@@ -36,7 +36,7 @@ architecture RTL of movement_UFO is
                             end if;
 
                             if r_x_start_UFO >= 255 then
-                                r_x_start_UFO <= -100;
+                                r_x_start_UFO <= -255;
                             end if;
 
                         end if;

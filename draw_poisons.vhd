@@ -15,7 +15,7 @@ entity draw_poisons is
 end draw_poisons;
 
 architecture RTL of draw_poisons is
-		signal r_x          :   integer range 0 to pc_GAME_WIDTH -1                  :=0;
+	signal r_x          :   integer range 0 to pc_GAME_WIDTH -1                  :=0;
     signal r_y          :   integer range 0 to pc_GAME_HEIGHT -1                 :=0;
 	 
     begin

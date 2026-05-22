@@ -37,8 +37,12 @@ architecture RTL of space_invaders_top is
     signal w_invaders : pt_invaders_pack;
     signal w_bullets : pt_bullets_pack;
 
+    signal w_start_en  :   STD_LOGIC   :='0';
     signal w_run_en  :   STD_LOGIC   :='0';
     signal w_loose_live_en :   STD_LOGIC   :='0';
+    signal w_win_en  :   STD_LOGIC   :='0';
+    signal w_end_en  :   STD_LOGIC   :='0';
+
     signal w_poisons : pt_invaders_pack;
     signal w_lives : integer;
 
@@ -113,15 +117,19 @@ architecture RTL of space_invaders_top is
             i_x => r_x,
             i_y => r_y,
             o_x_start_SS => w_x_start_SS,
+            o_x_start_ufo => w_x_start_ufo,
             o_invaders => w_invaders,
             o_bullets => w_bullets,
             o_poisons => w_poisons,
+            o_lives => w_lives,
+            o_ufo_active => w_ufo_active,
+            o_start_en => w_start_en,
             o_run_en => w_run_en,
             o_loose_live_en => w_loose_live_en,
-            o_lives => w_lives,
-            o_x_start_ufo => w_x_start_ufo,
-            o_ufo_active => w_ufo_active
+            o_win_en => w_win_en,
+            o_end_en => w_end_en
         );
+
             
         ----------------------------------------
         --drawing
@@ -129,20 +137,24 @@ architecture RTL of space_invaders_top is
         drwing_elements: entity work.draw_top
         port map(
             i_clk => r_clk25,
-            i_en => w_run_en,
-            i_Loose_live_en => w_loose_live_en,
-            i_lives => w_lives,
-            i_x_start_ufo => w_x_start_ufo,
-            i_ufo_active => w_ufo_active,
             i_x => r_x,
             i_y => r_y,
             i_DE => w_DE,
+            i_start_en => w_start_en,
+            i_run_en => w_run_en,
+            i_loose_live_en => w_loose_live_en,
+            i_win_en => w_win_en,
+            i_end_en => w_end_en,
+            i_ufo_active => w_ufo_active,
+            i_x_start_ufo => w_x_start_ufo,
             i_x_start_SS => w_x_start_SS,
             i_bullets => w_bullets,
             i_invaders => w_invaders,
             i_poisons => w_poisons,
+            i_lives => w_lives,
             o_drawing_data_bus => o_hdmi_data_bus
         );
+
 
         o_hdmi_DE <= w_DE;
         o_hdmi_clk <= r_clk25;
