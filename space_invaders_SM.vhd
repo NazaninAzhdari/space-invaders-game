@@ -21,7 +21,9 @@ entity space_invaders_SM is
         o_poisons       :   out     pt_invaders_pack;
         o_run_en        :   out     STD_LOGIC;
         o_loose_live_en :   out     STD_LOGIC;
-        o_lives         :   out     integer
+        o_lives         :   out     integer;
+        o_x_start_ufo   :   out     signed(pc_GAME_BITS downto 0);
+        o_ufo_active    :   out     STD_LOGIC
     );
 end space_invaders_SM;
 
@@ -48,6 +50,10 @@ architecture RTL of space_invaders_SM is
 
      signal r_counter : integer range 0 to pc_LOOSE_TIME :=0;
 
+     signal w_x_start_ufo :  signed(pc_GAME_BITS downto 0) :=(others=>'0');
+     signal r_x_start_UFO : integer  :=0;
+     signal r_ufo_active    :   STD_LOGIC :='1';
+
     begin
         process(i_clk) is
             begin
@@ -60,6 +66,7 @@ architecture RTL of space_invaders_SM is
 					r_kill_bullet <= (others=>'0');
                     r_kill_poison <= (others=>'0');
                     r_lives <= 3;
+                    r_ufo_active <= '1';
 						  
 						  
 						else --i_reset = '0'
@@ -98,36 +105,53 @@ architecture RTL of space_invaders_SM is
                                             end if;
                                         end if;
                                     end loop;
-											else
-												r_kill_bullet(i) <= '0';
+								else
+									r_kill_bullet(i) <= '0';
                                 end if;
                             end loop;
 
+                            for i in 0 to pc_BULLET_LIMIT-1 loop
+                                if w_bullets(i).Active = '1' then
+                                    if r_ufo_ACTIVE = '1' then
+                                        if w_bullets(i).X >= r_x_start_ufo and w_bullets(i).X < r_x_start_ufo + pc_UFO_WIDTH 
+                                            and w_bullets(i).Y >= pc_Y_START_UFO and w_bullets(i).Y < pc_Y_END_UFO then
+                                                r_kill_bullet(i) <= '1';
+                                                r_ufo_active <= '0';
+                                        end if;
+                                    end if;
+                                else
+                                    r_kill_bullet(i) <= '0';
+                                end if;
+                            end loop;
+								
+
                             for i in 0 to pc_INV_LIMIT-1 loop
                                 if w_poisons(i).Active = '1' then
-											 if w_poisons(i).Y >= pc_Y_start_SS and w_poisons(i).Y <= pc_Y_END_SS 
+									if w_poisons(i).Y >= pc_Y_start_SS and w_poisons(i).Y <= pc_Y_END_SS 
                                     and w_poisons(i).X >= r_x_start_SS and w_poisons(i).X < r_X_start_SS + pc_SS_WIDTH then
                                          
                                             r_kill_poison(i) <= '1';
                                             --kill_SS 
-															r_SM <= LOOSE_LIVE;
-                                    end if;
-												
+											r_SM <= LOOSE_LIVE;
+                                    end if;			
                                 else
                                     r_kill_poison(i) <= '0';    
                                 end if;
-
                              end loop;
-											
 
-									 
-                            for i in 0 to pc_INV_LIMIT -1 loop
-                                if w_invaders(i).Y + pc_INV_HEIGHT = 119 then
-                                        r_SM <= GAME_OVER;
+                             for i in 0 to pc_INV_LIMIT -1 loop
+                                if w_invaders(i).ACTIVE = '1' then
+                                    if w_invaders(i).Y + pc_INV_HEIGHT > pc_Y_start_SS and w_invaders(i).Y <= pc_Y_END_SS 
+                                    and w_invaders(i).X >= r_x_start_SS and w_invaders(i).X < r_X_start_SS + pc_SS_WIDTH then
+                                        r_SM <= LOOSE_LIVE;
                                     end if;
+                                end if;
                             end loop;
+											
+									 
+                           
 
-                            if r_kill_invader = c_20bit_one then
+                            if r_kill_invader = c_20bit_one and r_ufo_active = '0' then
                                 r_SM <= WINNING;
                             end if;
 
@@ -168,6 +192,7 @@ architecture RTL of space_invaders_SM is
             o_run_en <= r_run_en;
 
             o_lives <= r_lives;
+            o_ufo_active <= r_ufo_active;
 
             --i am using the HDMI protocol for this game => implement VGA interface. HVsync and HDMI ports
             --we are using UART to commiunicate with game, implement UART RX
@@ -185,8 +210,6 @@ architecture RTL of space_invaders_SM is
             i_en=> r_run_en,
             i_right_button=> i_right_btn,
             i_left_button=> i_left_btn,
-            i_x => i_x,
-            i_y=> i_y,
             o_x_start_SS => w_x_start_SS
         );
         r_x_start_SS <= to_integer(w_x_start_SS);
@@ -234,5 +257,17 @@ architecture RTL of space_invaders_SM is
         );
             o_poisons <= w_poisons;
 
+        ----------------------------------------------
+        --movement of ufo
+        ----------------------------------------------
+        ufo_movement: entity work.movement_UFO
+        port map(
+            i_clk => i_clk,
+            i_reset => i_reset,
+            i_en => r_run_en,
+            o_x_start_UFO => w_x_start_UFO
+        );
+        r_x_start_ufo <= to_integer(w_x_start_ufo);
+        o_x_start_ufo <= w_x_start_ufo;
 
     end RTL;

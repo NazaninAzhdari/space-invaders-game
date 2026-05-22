@@ -12,8 +12,6 @@ entity movement_spaceSheep is
         i_en            :   in      STD_LOGIC;
         i_right_button  :   in      STD_LOGIC;
         i_left_button   :   in      STD_LOGIC;
-        i_x             :   in      unsigned(pc_GAME_BITS-1 downto 0);
-        i_y             :   in      unsigned(pc_GAME_BITS -1 downto 0);
         o_x_start_SS    :   out     unsigned(pc_GAME_BITS -1 downto 0)
     );
 end movement_spaceSheep;
@@ -46,7 +44,7 @@ architecture RTL of movement_spaceSheep is
                                 r_right_counter <= r_right_counter + 1;
                             else
                                 r_right_counter <= 0;
-                                if r_x_start_SS + pc_SS_WIDTH < pc_X_END_BORDER then
+                                if r_x_start_SS + pc_SS_WIDTH < pc_X_END_SS_BORDER then
                                     r_x_start_SS <= r_x_start_SS + 1;
                                 end if;
                             end if;
@@ -60,7 +58,7 @@ architecture RTL of movement_spaceSheep is
                                 r_left_counter <= r_left_counter + 1;
                             else
                                 r_left_counter <= 0;
-                                if r_x_start_SS > pc_X_START_BORDER then
+                                if r_x_start_SS > pc_X_START_SS_BORDER then
                                     r_x_start_SS <= r_x_start_SS - 1;
                                 end if;
                             end if;

@@ -145,7 +145,7 @@ architecture RTL of draw_invaders is
 				gen_burst: for i in  0 to pc_INV_LIMIT-1 generate
 					o_draw_burst_invaders(i) <= pc_burst(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
                                                 when r_draw_burst(i) = '1'
-																and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
+												and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                                 and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH
                                                 else '0';
 				

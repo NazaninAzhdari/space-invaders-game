@@ -42,6 +42,8 @@ architecture RTL of space_invaders_top is
     signal w_poisons : pt_invaders_pack;
     signal w_lives : integer;
 
+    signal w_x_start_ufo :  signed(pc_GAME_BITS downto 0) :=(others=>'0');
+    signal w_ufo_active :   STD_LOGIC   :='0';
 
     begin
         -----------------------------------
@@ -116,7 +118,9 @@ architecture RTL of space_invaders_top is
             o_poisons => w_poisons,
             o_run_en => w_run_en,
             o_loose_live_en => w_loose_live_en,
-            o_lives => w_lives
+            o_lives => w_lives,
+            o_x_start_ufo => w_x_start_ufo,
+            o_ufo_active => w_ufo_active
         );
             
         ----------------------------------------
@@ -128,6 +132,8 @@ architecture RTL of space_invaders_top is
             i_en => w_run_en,
             i_Loose_live_en => w_loose_live_en,
             i_lives => w_lives,
+            i_x_start_ufo => w_x_start_ufo,
+            i_ufo_active => w_ufo_active,
             i_x => r_x,
             i_y => r_y,
             i_DE => w_DE,

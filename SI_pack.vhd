@@ -31,6 +31,9 @@ package SI_pack is
     constant pc_X_MIDDLE_BORDER :   integer     :=80;
     constant pc_Y_START_BORDER  :   integer     :=10;
     constant pc_Y_END_BORDER    :   integer     :=110;
+	 
+	 constant pc_X_START_SS_BORDER  :   integer     :=pc_X_START_BORDER + 10;
+    constant pc_X_END_SS_BORDER    :   integer     :=pc_X_END_BORDER - 10;
 
     --parameters of Space-sheep
     
@@ -79,7 +82,15 @@ package SI_pack is
     constant pc_X_START_H3 : integer        :=149;
     constant pc_X_END_H3 :  integer         :=pc_X_START_H3 + pc_H_WIDTH;
 
+    --ufo
+    constant pc_UFO_WIDTH   :   integer     :=16;
+    constant pc_UFO_HEIGHT  :   integer     :=8;
+    constant pc_Y_START_UFO :   integer     :=11;
+    constant pc_Y_END_UFO   :   integer     :=pc_Y_START_UFO + pc_UFO_HEIGHT;
     
+
+
+
     --parameters of speed
     constant pc_SS_SPEED        :   integer     :=500000;  --0.04 Sec (with 25MHz CLK)
     constant pc_BULLET_SPEED    :   integer     :=200000;  
@@ -90,6 +101,7 @@ package SI_pack is
      constant pc_POISON_SPEED       :   integer     :=500000;
      constant pc_SS_FRAME_SPEED 		:	integer     :=pc_BURST_SPEED;
      constant pc_LOOSE_TIME             :   integer     :=25000000; --1 sec
+     constant pc_UFO_SPEED              :   integer     :=1000000; --fast
 
 
     type pt_object_spicification is record
@@ -216,7 +228,17 @@ package SI_pack is
         "0000111001110000"
     );
 
-    
+    constant pc_UFO :  ROM8_16  :=(
+        "0000001111000000",
+        "0000011111100000",
+        "0001111111111000",
+        "0011001001001100",
+        "0111111111111110",
+        "1111111111111111",
+        "0011100110011100",
+        "0001000000001000"
+    );  
+
     constant pc_burst   :   ROM8_16     :=(
         "0110100110010000",
         "0010110010110000",
@@ -228,6 +250,7 @@ package SI_pack is
         "0001001011001100"
         
     );
+
 
     constant pc_heart   :  ROM6_7   :=(
         "0110110",
