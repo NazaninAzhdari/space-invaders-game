@@ -35,7 +35,6 @@ architecture RTL of UART_RX is
 
                     case r_SM is 
                         when IDLE =>
-                            --r_DV <= '0';
                             r_clk_counter <= 0;
                             r_bit_counter <= 0;
 
@@ -43,7 +42,7 @@ architecture RTL of UART_RX is
                             --Detect the falling edge of the start bit.
                             -------------------------------------------------------------
                             if i_data_serial = '0' and r_data_serial = '1' then
-											r_DV <= '0';
+								r_DV <= '0';
                                 r_SM <= START_BIT;
                             end if;
 
@@ -97,6 +96,10 @@ architecture RTL of UART_RX is
                     end if;
             end process;
             
+            ---------------------------------------------------------------------------------------------------
+            --The r_DV geos high when the byte is ready to read. 
+            --And it becomes low when the start bit of new data is recieved.(by falling edge of the start bit)
+            ----------------------------------------------------------------------------------------------------
             o_data_DV <= r_DV;
             o_data_parallel <= r_shift;
 

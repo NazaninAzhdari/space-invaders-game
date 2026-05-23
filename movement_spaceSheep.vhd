@@ -17,8 +17,8 @@ entity movement_spaceSheep is
 end movement_spaceSheep;
 
 architecture RTL of movement_spaceSheep is
-    signal r_left_counter   :   integer range 0 to pc_SS_SPEED                      :=0;
-    signal r_right_counter  :   integer range 0 to pc_SS_SPEED                      :=0;
+    signal r_left_counter   :   integer range 0 to pc_SS_SPEED-1                      :=0;
+    signal r_right_counter  :   integer range 0 to pc_SS_SPEED-1                     :=0;
     signal r_x_start_SS     :   integer range pc_X_START_BORDER to pc_X_END_BORDER  :=pc_X_INITIAL_SS;
 
     begin
@@ -30,8 +30,8 @@ architecture RTL of movement_spaceSheep is
 							 -----------------------------------------------------------------------------
 							 if i_reset = '1' then 
 								  r_x_start_SS <= pc_X_INITIAL_SS;
-								  r_right_counter <= 0;
-								  r_left_counter <= 0;
+								  --r_right_counter <= 0;
+								  --r_left_counter <= 0;
 								  
 						else
 					
@@ -40,7 +40,7 @@ architecture RTL of movement_spaceSheep is
                         --if right button pressed, space-sheep moves towards the right side, untill the end border
                         -------------------------------------------------------------------------------------------
                         if i_right_button = '1' then
-                            if r_right_counter < pc_SS_SPEED then
+                            if r_right_counter < pc_SS_SPEED-1 then
                                 r_right_counter <= r_right_counter + 1;
                             else
                                 r_right_counter <= 0;
@@ -54,7 +54,7 @@ architecture RTL of movement_spaceSheep is
                         --if left button pressed, space-sheep moves towards the left side, untill the start border
                         -------------------------------------------------------------------------------------------
                         elsif i_left_button = '1' then
-                            if r_left_counter < pc_SS_SPEED then
+                            if r_left_counter < pc_SS_SPEED-1 then
                                 r_left_counter <= r_left_counter + 1;
                             else
                                 r_left_counter <= 0;

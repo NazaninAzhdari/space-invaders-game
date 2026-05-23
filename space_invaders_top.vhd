@@ -59,6 +59,9 @@ architecture RTL of space_invaders_top is
     signal w_right_btn :   STD_LOGIC   :='0';
     signal w_left_btn :   STD_LOGIC   :='0'; 
 
+    signal r_sync1 :   STD_LOGIC   :='0';
+    signal r_sync2 :   STD_LOGIC   :='0';
+
     begin
         -----------------------------------
         --dividing the frequency
@@ -103,6 +106,22 @@ architecture RTL of space_invaders_top is
         r_y <= w_y(pc_VGA_BITS -1 downto 2); --dividing by 4
 
 
+        ------------------------------------------------------------------
+        --Synch the incoming data with clock, then send it to the UART Reciever.
+        --The keyboard input is asynchronous with the FPGA clock.
+        --if we dont sync the input data with clock and send it to Reciever.
+        --the reciever might detect some of the inputs and might miss some others
+        --to avoid this problem we pass the incoming data through two flip-flops to sync it with clock
+        --Using two flip-flops is more than enough to sync the asynchronous input with clock.
+        ------------------------------------------------------------------
+        synch_the_RX_data: process(r_clk25) is
+            begin
+                if rising_edge(r_clk25) then
+                    r_sync1 <= i_RX_data;
+                    r_sync2 <= r_sync1;
+                end if;
+            end process;
+
         ----------------------------------------
         --UART - RX for communication with Game
         ----------------------------------------
@@ -113,12 +132,11 @@ architecture RTL of space_invaders_top is
         )
         port map(
             i_clk => r_clk25,
-            i_data_serial => i_RX_data, 
+            i_data_serial => r_sync2, 
             o_data_parallel => w_RX_parallel_data, 
             o_data_DV => w_RX_DV 
         );
 		  
-
 
         -----------------------------------------
         --RX decoder
@@ -126,6 +144,7 @@ architecture RTL of space_invaders_top is
         RX_decoder: entity work.RX_decoder
         port map(
             i_clk => r_clk25,
+            i_reset => w_reset,
             i_en => w_RX_DV,
             i_ASCII_code => w_RX_parallel_data,
             o_start_btn => w_start_btn,

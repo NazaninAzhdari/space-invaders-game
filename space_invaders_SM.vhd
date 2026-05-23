@@ -88,7 +88,7 @@ architecture RTL of space_invaders_SM is
                                 r_ufo_active <= '1';  
 
                                 --By falling edge of the start switch, game starts.
-                                if i_start = '1' and r_start = '0' then --i changed it to rising edge for testing
+                                if i_start = '0' and r_start = '1' then --i changed it to rising edge for testing
                                     r_SM <= GAME_RUNNING;
                                 end if;
 
@@ -184,7 +184,7 @@ architecture RTL of space_invaders_SM is
 
                             when WINNING =>
                                 --By falling edge of the start switch, come back to start page.
-                                if i_start = '1' and r_start = '0' then  --NOTEEEEE: changed to rising edge for test
+                                if i_start = '0' and r_start = '1' then  --NOTEEEEE: changed to rising edge for test
                                     r_SM <= IDLE;
                                     r_SM_reset <= '1';
                                 end if;
@@ -192,7 +192,7 @@ architecture RTL of space_invaders_SM is
                             when game_OVER =>
                                 
                                 --By falling edge of the start switch, come back to start page.
-                                if i_start = '1' and r_start = '0' then  --changed to rising edge for testing uart
+                                if i_start = '0' and r_start = '1' then  --changed to rising edge for testing uart
                                     r_SM <= IDLE;
                                     r_SM_reset <= '1';
                                 end if;

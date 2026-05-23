@@ -111,7 +111,7 @@ package SI_pack is
      constant pc_SS_FRAME_SPEED 		:	integer     :=pc_BURST_SPEED;
      constant pc_LOOSE_TIME             :   integer     :=25000000; --1 sec
      constant pc_UFO_SPEED              :   integer     :=1000000; --fast
-
+		constant pc_SS_VELOCITY   :   integer   :=10;
 
     type pt_object_spicification is record
         X       :   integer;

@@ -63,7 +63,7 @@ architecture RTL of movement_bullet is
                         --since they have been shooted by one clock cycle apart, their x and y would be the same.
                         --so you only see one bullet. but its actully all the bullets that they are overlapping.
                         ----------------------------------------------------------------------------------------------------------------
-                        if i_bullet_button = '1' and r_bullet_button = '0' then --i changed it to rising edge for testing uart
+                        if i_bullet_button = '0' and r_bullet_button = '1' then --i changed it to rising edge for testing uart
                             for i in 0 to pc_BULLET_LIMIT-1 loop
                                 if r_bullets(i).ACTIVE = '0' then
                                     r_bullets(i).ACTIVE <= '1';
