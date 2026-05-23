@@ -12,7 +12,10 @@ entity draw_invaders is
         i_x                     :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_y                     :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_invaders              :   in      pt_invaders_pack;
-        o_draw_invaders         :   out     unsigned(pc_INV_LIMIT -1 downto 0);
+        o_draw_invaders_row1    :   out     unsigned(pc_INV_ROW_LIMIT -1 downto 0);
+        o_draw_invaders_row2    :   out     unsigned(pc_INV_ROW_LIMIT -1 downto 0);
+        o_draw_invaders_row3    :   out     unsigned(pc_INV_ROW_LIMIT -1 downto 0);
+        o_draw_invaders_row4    :   out     unsigned(pc_INV_ROW_LIMIT -1 downto 0);
         o_draw_burst_invaders   :   out     unsigned(pc_INV_LIMIT -1 downto 0)
     );
 end draw_invaders;
@@ -39,7 +42,7 @@ architecture RTL of draw_invaders is
         --First row of invaders:
         gen_invaders_row1: for i in 0 to pc_INV_ROW1_LIMIT-1 generate
 		  begin                      --frame 1 of invaders
-                o_draw_invaders(i) <= pc_invader_1_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
+                o_draw_invaders_row1(i) <= pc_invader_1_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
                                         when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else
@@ -55,7 +58,7 @@ architecture RTL of draw_invaders is
         --Second row of invaders:
         gen_invaders_row2: for i in pc_INV_ROW1_LIMIT to pc_INV_ROW2_LIMIT-1 generate
 		  begin                     --frame 1 of invaders
-                o_draw_invaders(i) <= pc_invader_2_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
+                o_draw_invaders_row2(i-pc_INV_ROW1_LIMIT) <= pc_invader_2_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
                                         when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else
@@ -71,7 +74,7 @@ architecture RTL of draw_invaders is
         --Third row of invaders:
         gen_invaders_row3: for i in pc_INV_ROW2_LIMIT to pc_INV_ROW3_LIMIT-1 generate
 		  begin                     --frame 1 of invaders
-                o_draw_invaders(i) <= pc_invader_3_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
+                o_draw_invaders_row3(i-pc_INV_ROW2_LIMIT) <= pc_invader_3_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
                                         when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else
@@ -87,7 +90,7 @@ architecture RTL of draw_invaders is
         --Forth row of invaders
         gen_invaders_row4: for i in pc_INV_ROW3_LIMIT to pc_INV_ROW4_LIMIT-1 generate
 		  begin                     --frame 1 of invaders
-                o_draw_invaders(i) <= pc_invader_4_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
+                o_draw_invaders_row4(i-pc_INV_ROW3_LIMIT) <= pc_invader_4_f1(r_y - i_invaders(i).Y )(r_x - i_invaders(i).X ) 
                                         when i_invaders(i).ACTIVE = '1' and r_frame = '0'
                                         and r_y >= i_invaders(i).Y and r_y < i_invaders(i).Y + pc_INV_HEIGHT
                                         and r_x >= i_invaders(i).X and r_x < i_invaders(i).X + pc_INV_WIDTH else

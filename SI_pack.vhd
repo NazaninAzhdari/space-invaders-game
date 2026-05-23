@@ -46,9 +46,9 @@ package SI_pack is
 
     --parameters of Space-sheep
     
-    constant pc_Y_START_SS      :   integer     :=106;
+    constant pc_Y_START_SS      :   integer     :=105;
     constant pc_Y_END_SS        :   integer     :=pc_Y_END_BORDER;
-    constant pc_SS_HEIGHT       :   integer     :=5;
+    constant pc_SS_HEIGHT       :   integer     :=6;
     constant pc_SS_WIDTH        :   integer     :=15;
 	constant pc_X_INITIAL_SS    :   integer     :=pc_X_MIDDLE_BORDER - (pc_SS_WIDTH/2);
 
@@ -64,6 +64,7 @@ package SI_pack is
     constant pc_INV_HEIGHT          :  integer     :=8;
 	constant pc_SPACE               :  integer     :=2;  --space between horizontal and vertical invaders
 	constant pc_INV_LIMIT           :  integer     :=20;
+    constant pc_INV_ROW_LIMIT : integer  :=5 ; --number of invaders in each row
     constant pc_INV_ROW1_LIMIT      :  integer     :=5;                     --5
     constant pc_INV_ROW2_LIMIT      :  integer     :=pc_INV_ROW1_LIMIT + 5; --10
     constant pc_INV_ROW3_LIMIT      :  integer     :=pc_INV_ROW2_LIMIT + 5; --15
@@ -113,6 +114,27 @@ package SI_pack is
      constant pc_UFO_SPEED              :   integer     :=1000000; --fast
 		constant pc_SS_VELOCITY   :   integer   :=10;
 
+
+    --color code
+    constant pc_YELLOW   :   unsigned(23 downto 0)  :="111111111111111100000000";
+    constant pc_GREEN   :   unsigned(23 downto 0)  :="000000001111111100000000";
+    constant pc_RED   :   unsigned(23 downto 0)  :="111111110000000000000000";
+    constant pc_BLUE   :   unsigned(23 downto 0)  :="000000000000000011111111";
+    constant pc_PURPLE   :   unsigned(23 downto 0)  :="011111110000000011111111";
+    constant pc_LIGHT_PINK   :   unsigned(23 downto 0)  :="111111110011001111111111";
+    constant pc_LIGHT_BLUE   :   unsigned(23 downto 0)  :="000000001111111111111111";
+    constant pc_LIGHT_YELLOW   :   unsigned(23 downto 0)  :="111111111111111100110011";
+    constant pc_LIGHT_GREEN   :   unsigned(23 downto 0)  :="001100111111111100110011";
+    constant pc_DARK_BLUE   :   unsigned(23 downto 0)  :="000000000000000000110011";
+    constant pc_BLACK       :   unsigned(23 downto 0) :=(others=>'0');
+	 constant pc_ORANGE : unsigned(23 downto 0)  :="111111111000000000000000";
+	 constant pc_PINK   : unsigned(23 downto 0)  :="111111110000000001111111";
+	 
+	 constant pc_C1   :   unsigned(23 downto 0)  :="111111111010111011001001";
+    constant pc_C2   :   unsigned(23 downto 0)  :="101000110100100110100100";
+    constant pc_C3   :   unsigned(23 downto 0)  :="111010100011111111110111";
+    constant pc_C4   :   unsigned(23 downto 0)  :="011110110010101111110101";
+
     type pt_object_spicification is record
         X       :   integer;
         Y       :   integer;
@@ -120,7 +142,7 @@ package SI_pack is
     end record;
     type pt_bullets_pack is array (0 to pc_BULLET_LIMIT -1) of pt_object_spicification;
     type pt_invaders_pack is array(0 to pc_INV_LIMIT -1) of pt_object_spicification;
-    type ROM5_15 is array (0 to 4) of unsigned(0 to 14);
+    type ROM6_15 is array (0 to 5) of unsigned(0 to 14);
     type ROM8_16 is array (0 to 7) of unsigned(0 to 15);
     type ROM6_7 is array (0 to 5) of unsigned(0 to 6);
     type ROM14_64 is array (0 to 13) of unsigned(0 to 63);
@@ -128,28 +150,31 @@ package SI_pack is
     type ROM10_64 is array (0 to 9) of unsigned(0 to 63);
 
 
-    constant pc_space_sheep   :  ROM5_15 :=(
+    constant pc_space_sheep   :  ROM6_15 :=(
         "000000010000000",
         "000000111000000",
         "001111111111100",
         "111111111111111",
+        "111111111111111",
         "111111111111111"
     );
 
-    constant pc_dead_SS_f1   :  ROM5_15 :=(
+    constant pc_dead_SS_f1   :  ROM6_15 :=(
         "001010010100001",
         "000101001001001",
         "010001111001010",
         "100011111111100",
-        "001111111111110"
+        "001111111111110",
+        "011111111111111"
     );
 
-    constant pc_dead_SS_f2   :  ROM5_15 :=(
+    constant pc_dead_SS_f2   :  ROM6_15 :=(
         "100101000100100",
         "011010010100100",
         "100001111000011",
         "010011111111101",
-        "001111111111110"
+        "001111111111110",
+        "011111111111111"
     );
 
     constant pc_invader_1_f1  :  ROM8_16  :=(
@@ -272,6 +297,7 @@ package SI_pack is
         "0011100",
         "0001000"
     );
+	 
 
     constant pc_space_invaders_txt  :  ROM14_64  :=(
         "0000000000000011111100111110000111100011111001111110000000000000",

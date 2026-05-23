@@ -62,6 +62,8 @@ architecture RTL of space_invaders_top is
     signal r_sync1 :   STD_LOGIC   :='0';
     signal r_sync2 :   STD_LOGIC   :='0';
 
+    signal w_drawing_data_bus  :  unsigned(23 downto 0)  :=(others =>'0');
+
     begin
         -----------------------------------
         --dividing the frequency
@@ -189,7 +191,7 @@ architecture RTL of space_invaders_top is
             i_clk => r_clk25,
             i_x => r_x,
             i_y => r_y,
-            i_DE => w_DE,
+				--i_de => w_de,
             i_start_en => w_start_en,
             i_run_en => w_run_en,
             i_loose_live_en => w_loose_live_en,
@@ -202,10 +204,10 @@ architecture RTL of space_invaders_top is
             i_invaders => w_invaders,
             i_poisons => w_poisons,
             i_lives => w_lives,
-            o_drawing_data_bus => o_hdmi_data_bus
+            o_drawing_data_bus => w_drawing_data_bus
         );
 
-
+        o_hdmi_data_bus <= w_drawing_data_bus when w_de = '1' else (others=>'0');
         o_hdmi_DE <= w_DE;
         o_hdmi_clk <= r_clk25;
 

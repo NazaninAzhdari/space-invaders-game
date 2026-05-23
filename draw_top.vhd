@@ -10,8 +10,8 @@ entity draw_top is
         i_clk               :   in      STD_LOGIC;
         i_x                 :   in      unsigned(pc_GAME_BITS-1 downto 0);
         i_y                 :   in      unsigned(pc_GAME_BITS-1 downto 0);
-        i_DE                :   in      STD_LOGIC;
         i_start_en          :   in      STD_LOGIC;
+		  --i_de 					:	in 		STD_LOGIC;
         i_run_en            :   in      STD_LOGIC;
         i_loose_live_en     :   in      STD_LOGIC;
         i_win_en            :   in      STD_LOGIC;
@@ -28,7 +28,13 @@ entity draw_top is
 end draw_top;
 
 architecture RTL of draw_top is
-    signal w_draw_invaders      :   unsigned(pc_INV_LIMIT-1 downto 0)       :=(others=>'0');
+
+    signal w_draw_inv_row1      :   unsigned(pc_INV_ROW_LIMIT-1 downto 0)       :=(others=>'0');
+    signal w_draw_inv_row2      :   unsigned(pc_INV_ROW_LIMIT-1 downto 0)       :=(others=>'0');
+    signal w_draw_inv_row3      :   unsigned(pc_INV_ROW_LIMIT-1 downto 0)       :=(others=>'0');
+    signal w_draw_inv_row4      :   unsigned(pc_INV_ROW_LIMIT-1 downto 0)       :=(others=>'0');
+
+
     signal w_draw_bullets       :   unsigned(pc_BULLET_LIMIT -1 downto 0)   :=(others=>'0');
     signal w_draw_SS            :   STD_LOGIC                               :='0';
     signal w_draw_burst_invaders:   unsigned(pc_INV_LIMIT-1 downto 0)       :=(others=>'0');
@@ -40,7 +46,8 @@ architecture RTL of draw_top is
     signal w_draw_WIN_txt       :   STD_LOGIC                               :='0';
 
 
-	 signal r_running_en       :   STD_LOGIC                               :='0';
+	signal r_running_en       :   STD_LOGIC                               :='0';
+    constant c_5bit_zero       :   unsigned(pc_INV_ROW_LIMIT-1 downto 0)    :=(others=>'0');
     constant c_20bit_zero       :   unsigned(pc_INV_LIMIT-1 downto 0)       :=(others=>'0');
 	constant c_8bit_zero        :   unsigned(pc_BULLET_LIMIT-1 downto 0)    :=(others=>'0');
 
@@ -81,7 +88,10 @@ architecture RTL of draw_top is
             i_x => i_x,
             i_y => i_y,
             i_invaders => i_invaders,
-            o_draw_invaders => w_draw_invaders,
+            o_draw_invaders_row1 => w_draw_inv_row1,
+            o_draw_invaders_row2 => w_draw_inv_row2,
+            o_draw_invaders_row3 => w_draw_inv_row3,
+            o_draw_invaders_row4 => w_draw_inv_row4,
             o_draw_burst_invaders => w_draw_burst_invaders
         );
 
@@ -151,22 +161,35 @@ architecture RTL of draw_top is
         );
 
 
-			r_running_en <= i_run_EN or i_loose_live_en;
-			
-        o_drawing_data_bus <= (others=>'0') when ((i_de = '1' and r_running_en = '1' and
-                                        (w_draw_SS = '1' or w_draw_hearts = '1' or w_draw_invaders /=c_20bit_zero 
-                                        or w_draw_bullets /=c_8bit_zero or w_draw_burst_invaders /= c_20bit_zero
-                                        or w_draw_poisons /=c_20bit_zero or w_draw_ufo = '1') )
-									 or (i_de = '1' and i_start_EN = '1' and w_draw_SI_txt = '1')
-									 or (i_de = '1' and i_end_EN = '1' and w_draw_GO_txt = '1')
-									 or (i_de = '1' and i_win_EN = '1' and w_draw_WIN_txt = '1'))
-													 
-													 else
-                            (others=>'1') when i_de = '1' 
-									 
-									 else
-                            (others=>'0');
-        
-        
+		r_running_en <= i_run_EN or i_loose_live_en;
+		
+
+
+
+        o_drawing_data_bus <= 
+            --Start frame
+            pc_YELLOW       when i_start_EN = '1' and (w_draw_SI_txt = '1' or w_draw_SS = '1') else
+            pc_DARK_BLUE    when i_start_EN = '1' else
+            
+            --Run frame
+            pc_YELLOW        when  r_running_en = '1' and (w_draw_SS = '1' or w_draw_bullets /=c_8bit_zero) else
+            pc_RED          when  r_running_en = '1' and (w_draw_hearts = '1' or w_draw_burst_invaders /= c_20bit_zero) else 
+            pc_C1   when  r_running_en = '1' and (w_draw_inv_row1 /= c_5bit_zero) else
+            pc_C2 when  r_running_en = '1' and (w_draw_inv_row2 /= c_5bit_zero) else
+            pc_C3  when  r_running_en = '1' and (w_draw_inv_row3 /= c_5bit_zero) else
+            pc_C4   when r_running_en = '1' and (w_draw_inv_row4 /= c_5bit_zero) else
+            pc_ORANGE       when r_running_en = '1' and (w_draw_poisons /=c_20bit_zero) else
+            PC_PINK       when  r_running_en = '1' and (w_draw_ufo = '1') else
+            pc_DARK_BLUE    when  r_running_en = '1' else
+            
+            --Game Over frame
+            pc_RED          when i_end_EN = '1' and (w_draw_GO_txt = '1') else
+            pc_DARK_BLUE    when  i_end_EN = '1' else
+
+            --Winning frame
+            pc_GREEN       when  i_win_EN = '1' and (w_draw_win_txt = '1') else
+            pc_DARK_BLUE    when  i_win_EN = '1';
+
+
 
     end RTL;
