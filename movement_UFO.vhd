@@ -10,13 +10,13 @@ entity movement_UFO is
         i_clk           :   in      STD_LOGIC;
         i_reset         :   in      STD_LOGIC;
         i_en            :   in      STD_LOGIC;
-        o_x_start_UFO   :   out     signed(pc_GAME_BITS downto 0)  --one bit more , bcs signed
+        o_x_start_UFO   :   out     signed(pc_GAME_BITS downto 0)  --One bit more , BCS it's signed
     );
 end movement_UFO;
 
 architecture RTL of movement_UFO is
-    signal r_x_start_UFO : integer range -255 to 255    :=-255;
-    signal r_counter : integer range 0 to pc_UFO_SPEED  :=0;
+    signal r_x_start_UFO    : integer range -255 to 255         :=-255;
+    signal r_counter        : integer range 0 to pc_UFO_SPEED   :=0;
 
     begin
         process(i_clk) is
@@ -27,7 +27,6 @@ architecture RTL of movement_UFO is
 
                     else
                         if i_en = '1' then
-
                             if r_counter < pc_UFO_SPEED then
                                 r_counter <= r_counter + 1;
                             else

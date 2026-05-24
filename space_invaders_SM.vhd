@@ -51,12 +51,13 @@ architecture RTL of space_invaders_SM is
     signal r_kill_poison   :    unsigned(pc_INV_LIMIT-1 downto 0)               :=(others=>'0');
 	 
 	--Helper signals and constant
-    signal r_start         :   STD_LOGIC                                        :='0';
+    signal r_start         :    STD_LOGIC                                       :='0';
     signal r_run_en        :    STD_LOGIC                                       :='0';
     signal r_lives         :    integer range 0 to 3                            :=3;
     signal r_counter       :    integer range 0 to pc_LOOSE_TIME                :=0;
-    constant c_20bit_one   : unsigned(pc_INV_LIMIT-1 downto 0)                  :=(others=>'1');
-    signal r_SM_reset : STD_LOGIC  :='0';
+    signal r_SM_reset      :    STD_LOGIC                                       :='0';
+    constant c_20bit_one   :    unsigned(pc_INV_LIMIT-1 downto 0)               :=(others=>'1');
+    
 
     begin
         process(i_clk) is
@@ -88,7 +89,7 @@ architecture RTL of space_invaders_SM is
                                 r_ufo_active <= '1';  
 
                                 --By falling edge of the start switch, game starts.
-                                if i_start = '0' and r_start = '1' then --i changed it to rising edge for testing
+                                if i_start = '0' and r_start = '1' then 
                                     r_SM <= GAME_RUNNING;
                                 end if;
 
@@ -184,7 +185,7 @@ architecture RTL of space_invaders_SM is
 
                             when WINNING =>
                                 --By falling edge of the start switch, come back to start page.
-                                if i_start = '0' and r_start = '1' then  --NOTEEEEE: changed to rising edge for test
+                                if i_start = '0' and r_start = '1' then 
                                     r_SM <= IDLE;
                                     r_SM_reset <= '1';
                                 end if;
@@ -192,16 +193,16 @@ architecture RTL of space_invaders_SM is
                             when game_OVER =>
                                 
                                 --By falling edge of the start switch, come back to start page.
-                                if i_start = '0' and r_start = '1' then  --changed to rising edge for testing uart
+                                if i_start = '0' and r_start = '1' then 
                                     r_SM <= IDLE;
                                     r_SM_reset <= '1';
                                 end if;
 
                             when others =>
                                 r_SM <= IDLE;
-                            end case;
-                    end if;
-				end if;
+                        end case;
+                    end if; --if i-reset = '1' or else
+				end if; -- if rising-edge
             end process;
 
            
@@ -217,7 +218,6 @@ architecture RTL of space_invaders_SM is
         o_run_en <= r_run_en;
         o_lives <= r_lives;
         o_ufo_active <= r_ufo_active;
-
 
         -----------------------------------------
         --Movement of Space_Sheep
@@ -244,7 +244,7 @@ architecture RTL of space_invaders_SM is
             i_en => r_run_en,
             i_x_ss => w_x_start_ss,
             i_bullet_button => i_bullet_btn,
-				i_kill_bullet => r_kill_bullet,
+			i_kill_bullet => r_kill_bullet,
             o_bullets => w_bullets
         );
         o_bullets <= w_bullets;
@@ -257,7 +257,7 @@ architecture RTL of space_invaders_SM is
             i_clk => i_clk,
             i_reset => r_SM_reset,
             i_en => r_run_en,
-				i_kill_invader => r_kill_invader,
+			i_kill_invader => r_kill_invader,
             o_invaders => w_invaders
         );
         o_invaders <= w_invaders;

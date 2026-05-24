@@ -7,28 +7,27 @@ use work.SI_pack.ALL;
 
 entity movement_poison is
     port (
-        i_clk       :   in      STD_LOGIC;
-        i_reset     :   in      STD_LOGIC;
-        i_en        :   in      STD_LOGIC;
-        i_invaders  :   in      pt_invaders_pack;
-        i_kill_poison : in     unsigned(pc_INV_LIMIT-1 downto 0);
-        o_poisons :  out  pt_invaders_pack
-
+        i_clk           :   in      STD_LOGIC;
+        i_reset         :   in      STD_LOGIC;
+        i_en            :   in      STD_LOGIC;
+        i_invaders      :   in      pt_invaders_pack;
+        i_kill_poison   :   in      unsigned(pc_INV_LIMIT-1 downto 0);
+        o_poisons       :   out     pt_invaders_pack
     );
 end movement_poison;
 
 architecture RTL of movement_poison is
-    signal w_lfsr   :   unsigned(4 downto 0)    :=(others=>'0');
-    signal r_poison_ID : integer range 0 to pc_INV_LIMIT -1 :=0;
-    signal r_poisons  :  pt_invaders_pack :=pc_initial_poisons;
-    signal r_speed_counter : integer range 0 to pc_POISON_SPEED :=0;
-    signal r_time_counter : integer range 0 to pc_TIME_BETWEEN_POISONS :=0;
-    signal r_poison_en : STD_LOGIC :='0';
+    signal w_lfsr           :   unsigned(4 downto 0)                        :=(others=>'0');
+    signal r_poison_ID      :   integer range 0 to pc_INV_LIMIT -1          :=0;
+    signal r_poisons        :   pt_invaders_pack                            :=pc_initial_poisons;
+    signal r_speed_counter  :   integer range 0 to pc_POISON_SPEED          :=0;
+    signal r_time_counter   :   integer range 0 to pc_TIME_BETWEEN_POISONS  :=0;
+    signal r_poison_en      :   STD_LOGIC                                   :='0';
 
     begin
 
         ---------------------------------------------------------
-        --Using LFSR5 to generate random numbers between 0 to 31
+        --Using LFSR-5 to generate random numbers between 0 to 31
         ---------------------------------------------------------
         gen_random_num: entity work.LFSR5
         port map(
@@ -59,89 +58,82 @@ architecture RTL of movement_poison is
         process(i_clk) is
             begin
                 if rising_edge(i_clk) then
-					 if i_reset = '1' then
-                    ---------------------------------------------------------
-                    --if we reset the game all the poisons becomes inactive 
-                    --and they will be placed in the locartion of invaders.
-                    ---------------------------------------------------------
-                    r_poisons <= pc_initial_poisons;
+					if i_reset = '1' then
+                        ---------------------------------------------------------
+                        --If we reset the game all the poisons becomes inactive 
+                        --and they will be placed in the location of invaders.
+                        ---------------------------------------------------------
+                        r_poisons <= pc_initial_poisons;
 						  
 						  
-					 else --if i_reset = '0'
-					 
-                    if i_en = '1' then
-                        --------------------------------------------------------------------------------
-                        --**r_poison_en is high only for one clock cycle.**
-                        --if poison logic gets enabled, the invader is ALive and its poison is inactive.
-                        --then we can shoot its poison.(poison becomes active)
-                        ---------------------------------------------------------------------------------
-                        if r_poison_en = '1' then
-                            
+					else --if i_reset = '0'
+                        if i_en = '1' then
+                            --------------------------------------------------------------------------------
+                            --**r_poison_en is high only for one clock cycle.**
+                            --if r?poison?en becomes high, the invader is ALive and its poison is inactive.
+                            --Then we can shoot its poison.(poison becomes active)
+                            ---------------------------------------------------------------------------------
+                            if r_poison_en = '1' then
                                 if r_poisons(r_poison_ID).ACTIVE = '0' and i_invaders(r_poison_ID).ACTIVE = '1' then
-                                    
                                         r_poisons(r_poison_ID).ACTIVE <= '1';
                                         r_poisons(r_poison_ID).X <= i_invaders(r_poison_ID).X;
                                         r_poisons(r_poison_ID).Y <= i_invaders(r_poison_ID).Y;
-                                    
                                 end if;
-                        
-								end if;
+                            end if;
 
 
-                        -------------------------------------------------------------------
-                        --all the Active poisons move downward every pc_POISON_SPEED times
-                        --if they reach the end of screen, they becomes inactive
-                        -------------------------------------------------------------------
-                        if r_speed_counter < pc_POISON_SPEED then
-                            r_speed_counter <= r_speed_counter + 1;
-                        else
-                            r_speed_counter <= 0;
+                            ------------------------------------------------------------------------------
+                            --All the Active poisons move downward one pixel every pc_POISON_SPEED times.
+                            --If they reach the end of screen, they becomes inactive
+                            ------------------------------------------------------------------------------
+                            if r_speed_counter < pc_POISON_SPEED then
+                                r_speed_counter <= r_speed_counter + 1;
+                            else
+                                r_speed_counter <= 0;
 
-                            for i in 0 to pc_INV_LIMIT -1 loop
-                                if r_poisons(i).ACTIVE = '1' then
-                                    if r_poisons(i).Y < 119 then
-                                        r_poisons(i).Y <= r_poisons(i).Y + 1;
-                                    else
-                                        r_poisons(i).ACTIVE <= '0';
-													 r_poisons(i).X <= i_invaders(i).X;
-                                        r_poisons(i).Y <= i_invaders(i).Y;
+                                for i in 0 to pc_INV_LIMIT -1 loop
+                                    if r_poisons(i).ACTIVE = '1' then
+                                        if r_poisons(i).Y < 119 then
+                                            r_poisons(i).Y <= r_poisons(i).Y + 1;
+                                        else
+                                            r_poisons(i).ACTIVE <= '0';
+                                                        r_poisons(i).X <= i_invaders(i).X;
+                                            r_poisons(i).Y <= i_invaders(i).Y;
+                                        end if;
                                     end if;
-                                end if;
-                            end loop;
+                                end loop;
+                            end if;
 
-                        end if;
+                            -------------------------------------------------------------------
+                            --r_poison_enable becomes high for only one clock cycle
+                            --its low for the pc_TIME_BETWEEN_POISONS clock cycles
+                            -------------------------------------------------------------------
+                            if r_time_counter < pc_TIME_BETWEEN_POISONS then
+                                r_time_counter <= r_time_counter + 1;
+                                r_poison_en <= '0';
+                            else
+                                r_time_counter <=0;
+                                r_poison_en <= '1';
+                            end if;
+
+			            end if; --end of i_en = '1'
 
                         -------------------------------------------------------------------
-                        --r_poison_enable becomes high for only one clock cycles
-                        --its low for the pc_TIME_BETWEEN_POISONS
-                        -------------------------------------------------------------------
-                        if r_time_counter < pc_TIME_BETWEEN_POISONS then
-                            r_time_counter <= r_time_counter + 1;
-                            r_poison_en <= '0';
-                        else
-                            r_time_counter <=0;
-                            r_poison_en <= '1';
-                        end if;
-			end if; --end of i_en = '1'
-                        -------------------------------------------------------------------
-                        --if poison collide with space-sheep, r_kill_poison goes high
-                        --thus the poison becomes inactive.
+                        --If poison collide with space-sheep, r_kill_poison goes high.
+                        --Thus the poison becomes inactive.
                         -------------------------------------------------------------------
                         for i in 0 to pc_INV_LIMIT -1 loop
                             if i_kill_poison(i) = '1' then
                                 r_poisons(i).ACTIVE <= '0';
-										  r_poisons(i).X <= i_invaders(i).X;
+								r_poisons(i).X <= i_invaders(i).X;
                                 r_poisons(i).Y <= i_invaders(i).Y;
                             end if;
                         end loop;
 
-
-                    
-                end if;
-					 end if;
+                    end if; --if reset='1' or else
+				end if; --if rising-edge
             end process;
             
             o_poisons <= r_poisons;
-
 
     end RTL;

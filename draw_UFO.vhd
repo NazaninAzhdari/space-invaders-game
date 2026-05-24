@@ -31,7 +31,7 @@ architecture RTL of draw_UFO is
 
         ------------------------------------------------------------
         --Drawing UFO at spicific location
-        --if UFO collide with bullet, draw burst instead of UFO.
+        --If UFO collide with bullet, draw burst instead of UFO.
         ------------------------------------------------------------
         o_draw_UFO <= pc_UFO(r_y - pc_Y_START_UFO)(r_x - r_x_start_ufo) 
                                     when i_UFO_active = '1'

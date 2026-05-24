@@ -23,7 +23,12 @@ architecture RTL of draw_poisons is
         r_y <= to_integer(i_y);
 		  
         draw_poison_gen: for i in 0 to pc_INV_LIMIT -1 generate
-            o_draw_poisons(i) <= '1' when i_poisons(i).ACTIVE = '1' and r_x = i_poisons(i).X and r_y = i_poisons(i).Y else '0';
+            o_draw_poisons(i) <= '1' when i_poisons(i).ACTIVE = '1' and ((r_x = i_poisons(i).X and r_y = i_poisons(i).Y) 
+                                                                    or (r_x = i_poisons(i).X + 1 and r_y = i_poisons(i).Y)
+                                                                    or (r_x = i_poisons(i).X  -1 and r_y = i_poisons(i).Y)
+                                                                    or (r_x = i_poisons(i).X and r_y = i_poisons(i).Y -1)
+                                                                    or (r_x = i_poisons(i).X and r_y = i_poisons(i).Y +1))
+                                                                    else '0';
         end generate;
 
     end RTL;
