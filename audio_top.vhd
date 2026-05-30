@@ -10,12 +10,12 @@ entity audio_top is
         --inputs
         i_clk50             :   in      STD_LOGIC;
         i_reset             :   in      STD_LOGIC;
-        i_bullets   :   in  pt_bullets_pack;
-        i_invaders     :   in      pt_invaders_pack;
-        i_ufo_active    :   in      STD_LOGIC;
-        i_death_sound_En     :   in      STD_LOGIC;
-        i_gameover_sound_En    :   in      STD_LOGIC;
-        i_win_sound_En    :   in      STD_LOGIC;
+        i_bullets           :   in      pt_bullets_pack;
+        i_invaders          :   in      pt_invaders_pack;
+        i_ufo_active        :   in      STD_LOGIC;
+        i_death_sound_En    :   in      STD_LOGIC;
+        i_gameover_sound_En :   in      STD_LOGIC;
+        i_win_sound_En      :   in      STD_LOGIC;
         
         --outputs
         o_MCLK              :   out     STD_LOGIC;
@@ -29,35 +29,39 @@ architecture RTL of audio_top is
     signal w_LRCLK          : STD_LOGIC              :='0';
 
     --Sample Signals
-	signal r_sample         : unsigned(23 downto 0)  :=(others=>'0');
+	signal r_sample             : unsigned(23 downto 0)  :=(others=>'0');
     signal w_kill_invs_sample   : unsigned(23 downto 0)  :=(others=>'0');
 	signal w_kill_UFO_sample    : unsigned(23 downto 0)  :=(others=>'0');
-    signal w_bullet_sample   : unsigned(23 downto 0)  :=(others=>'0');
-	signal w_death_sample    : unsigned(23 downto 0)  :=(others=>'0');
-    signal w_gameover_sample   : unsigned(23 downto 0)  :=(others=>'0');
-	signal w_win_sample    : unsigned(23 downto 0)  :=(others=>'0');
+    signal w_bullet_sample      : unsigned(23 downto 0)  :=(others=>'0');
+	signal w_death_sample       : unsigned(23 downto 0)  :=(others=>'0');
+    signal w_gameover_sample    : unsigned(23 downto 0)  :=(others=>'0');
+	signal w_win_sample         : unsigned(23 downto 0)  :=(others=>'0');
 
 	--Data Valid signals
     signal w_kill_invs_DV       : STD_LOGIC              :='0';
     signal w_kill_UFO_DV        : STD_LOGIC              :='0';
-    signal w_bullet_DV       : STD_LOGIC              :='0';
-    signal w_death_DV        : STD_LOGIC              :='0';
-    signal w_gameover_DV       : STD_LOGIC              :='0';
-    signal w_win_DV        : STD_LOGIC              :='0';
+    signal w_bullet_DV          : STD_LOGIC              :='0';
+    signal w_death_DV           : STD_LOGIC              :='0';
+    signal w_gameover_DV        : STD_LOGIC              :='0';
+    signal w_win_DV             : STD_LOGIC              :='0';
 
-    signal r_kill_invs_sound_en       : STD_LOGIC              :='0';
-    signal r_kill_UFO_sound_en        : STD_LOGIC              :='0';
-    signal r_bullet_sound_en       : STD_LOGIC              :='0';
+    --enable signals
+    signal r_kill_invs_sound_en : STD_LOGIC              :='0';
+    signal r_kill_UFO_sound_en  : STD_LOGIC              :='0';
+    signal r_bullet_sound_en    : STD_LOGIC              :='0';
 
-	 signal r_bullets : unsigned(pc_BULLET_LIMIT-1 downto 0) :=(others=>'0');
-	 signal r_invaders : unsigned(pc_INV_LIMIT-1 downto 0) :=(others=>'0');
-	 signal r_ufo_active : STD_LOGIC  :='0';
+    --helper registers
+	signal r_bullets            : unsigned(pc_BULLET_LIMIT-1 downto 0)  :=(others=>'0');
+	signal r_invaders           : unsigned(pc_INV_LIMIT-1 downto 0)     :=(others=>'0');
+	signal r_ufo_active         : STD_LOGIC                             :='0';
 	 
     begin 
         process(i_clk50) is
             begin
                 if rising_edge(i_clk50) then
-                    --generate the enable signal for bullet sounds
+                    -----------------------------------------------
+                    --Generating the enable signal for bullet sounds
+                    -----------------------------------------------
                     for i in 0 to pc_BULLET_LIMIT -1 loop
                         r_bullets(i) <= i_bullets(i).ACTIVE;
 
@@ -69,7 +73,9 @@ architecture RTL of audio_top is
                         end if;
                     end loop;
 
-                    --generating enable signal for killing invaders sound
+                    ------------------------------------------------------
+                    --Generating enable signal for killing invaders sound
+                    ------------------------------------------------------
                     for i in 0 to pc_INV_LIMIT -1 loop
                         r_invaders(i) <= i_invaders(i).ACTIVE;
 
@@ -81,7 +87,9 @@ architecture RTL of audio_top is
                         end if;
                     end loop;
 
-                    --generating enable signal for killing ufo sound
+                    -------------------------------------------------
+                    --Generating enable signal for killing ufo sound
+                    -------------------------------------------------
                     r_ufo_active <= i_ufo_active;
                     if i_ufo_ACTIVE = '0' and r_ufo_active = '1' then
                         r_kill_ufo_sound_en <= '1';
@@ -97,9 +105,9 @@ architecture RTL of audio_top is
         killing_invs_melody_generator: entity work.melody_gen
         generic map(
             g_SAMPLE_WIDTH => 24,
-            g_HALF_PERIOD_TONE => (27, 34, 48), --Corrosponds to 900Hz, 700Hz, 500Hz
+            g_HALF_PERIOD_TONE => (27, 34, 48),     --Corrosponds to 900Hz, 700Hz, 500Hz
             g_TONE_LIMIT => 3,                      --Maximum number of the tones
-            g_DURATION_LIMIT => 2880                 --60ms
+            g_DURATION_LIMIT => 2880                --60ms
         )
         port map(
             i_clk => i_clk50,
@@ -117,7 +125,7 @@ architecture RTL of audio_top is
             g_SAMPLE_WIDTH => 24,
             g_HALF_PERIOD_TONE => (20, 30, 53, 53), --Corrosponds to 1200Hz, 800Hz, 450Hz
             g_TONE_LIMIT => 4,                      --Maximum number of the tones
-            g_DURATION_LIMIT => 2880                 --60ms
+            g_DURATION_LIMIT => 2880                --60ms
         )
         port map(
             i_clk => i_clk50,
@@ -134,8 +142,8 @@ architecture RTL of audio_top is
         generic map(
             g_SAMPLE_WIDTH => 24,
             g_HALF_PERIOD_TONE => (22, 22), --Corrosponds to 1100Hz
-            g_TONE_LIMIT => 1,                           --Maximum number of the tones
-            g_DURATION_LIMIT => 5760                     --120ms
+            g_TONE_LIMIT => 1,              --Maximum number of the tones
+            g_DURATION_LIMIT => 5760        --120ms
         )
         port map(
             i_clk => i_clk50,
@@ -152,8 +160,8 @@ architecture RTL of audio_top is
         generic map(
             g_SAMPLE_WIDTH => 24,
             g_HALF_PERIOD_TONE => (20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120),  --Corrosponds to 200-1200Hz
-            g_TONE_LIMIT => 11,                            --Maximum number of the tones
-            g_DURATION_LIMIT => 1746                      --36ms
+            g_TONE_LIMIT => 11,                                                     --Maximum number of the tones
+            g_DURATION_LIMIT => 1746                                                --36ms
         )
         port map(
             i_clk => i_clk50,
@@ -187,9 +195,9 @@ architecture RTL of audio_top is
         winning_melody_generator: entity work.melody_gen
         generic map(
             g_SAMPLE_WIDTH => 24,
-            g_HALF_PERIOD_TONE => (40, 32, 27, 22, 18, 18, 15, 15, 15), --Corrosonds whatttttttttttttttttttttttttttt
-            g_TONE_LIMIT => 9,                                                  --Maximum number of the tones
-            g_DURATION_LIMIT => 7200                                             --????????????????
+            g_HALF_PERIOD_TONE => (40, 32, 27, 22, 18, 18, 15, 15, 15), --Corrosonds to 600Hz, 750Hz, 900Hz, 1100Hz, 1300Hz, 1600Hz
+            g_TONE_LIMIT => 9,                                          --Maximum number of the tones
+            g_DURATION_LIMIT => 7200                                    --150ms
         )
         port map(
             i_clk => i_clk50,
@@ -223,11 +231,10 @@ architecture RTL of audio_top is
         --------------------------------------------------------
         r_sample <= w_gameover_sample when w_gameover_DV = '1' else
                     w_win_sample when w_win_DV = '1' else
-							w_bullet_sample when w_bullet_DV = '1' else
+					w_bullet_sample when w_bullet_DV = '1' else
                     w_death_sample when w_death_DV = '1' else
                     w_kill_invs_sample when w_kill_invs_DV = '1' else
                     w_kill_UFO_sample when w_kill_UFO_DV = '1' else
-                    
 					(others=>'0');
 
         o_LRCLK <= w_LRCLK;

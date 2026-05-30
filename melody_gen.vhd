@@ -42,12 +42,14 @@ architecture RTL of melody_gen is
                     r_en <= i_en;
                     if i_en = '1' and r_en = '0' then
                         w_en <= '1';
-
                         r_freq_counter <= 0;
                         r_duration_counter <= 0;
                         tone_indx <= 0;
                     end if;
 
+                    --------------------------------------------------------------
+                    --in each rising-edge of LRCLK a sample will be generated
+                    --------------------------------------------------------------
                     if i_LRCLK = '1' and r_LRCLK = '0' then --rising-edge of LRCLK
                         if w_en = '1' then
                             o_sample_DV <= '1';
@@ -79,6 +81,7 @@ architecture RTL of melody_gen is
                             else
                                 r_sample <= AMP_NEG;
                             end if;
+                            
                         else
                             r_sample <= (others=>'0');
                             r_freq_counter <= 0;

@@ -183,7 +183,6 @@ architecture RTL of space_invaders_top is
             o_end_en => w_end_en
         );
 
-
         ---------------------------------------
         --Audio Interface
         ---------------------------------------
