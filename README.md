@@ -80,13 +80,27 @@ Let'have a look at Space Invaders Game's flow chart and explore the functionalit
 
 ## 4. Hardware Deployment & Setup Guide
 
-To get the game running on your **Cyclone V GX FPGA** board, please follow these steps:
+To get the game running on your board, please follow these steps:
 
-1.  **VGA Connection**: Connect a standard VGA cable from the board's VGA port to a monitor capable of 640x480 resolution.
+1.  **HDMI Connection**: Connect a standard HDMI cable from the board's HDMI port to the monitor.
 2.  **Audio Output**: Plug your speakers or headphones into the Line-Out jack. The `i2s_tx` module handles the digital-to-analog conversion via the onboard codec.
-3.  **Keyboard Control**: Connect the UART RX pin of the FPGA to your PC's serial output (usually via a USB-to-TTL adapter). The game expects ASCII codes for movement and firing.
-4.  **Clocking**: The system uses a 50MHz onboard clock. Internal modules like `HV_sync` use a 25MHz clock derived from the main clock to match VGA standards.
-5.  **Compilation**: Open the project in Intel Quartus, assign the pins according to the Cyclone V GX datasheet, and "Start Compilation."
-6.  **Programming**: Once compiled, use the Quartus Programmer to load the `.sof` file onto the FPGA.
+3.  **Keyboard Control**: using UART to USB cable, connect your PC's serial output(USB port) to the FPGA board. Then Open a terminal emulator like **PuTTY** or Tera Term. Select the "Serial" connection type and enter the following settings:
+    *   **Serial Line**: [Your COM Port Number]
+    *   **Baud Rate (Speed)**: **115200**
+    *   **Data Bits**: **8**
+    *   **Stop Bits**: 1
+    *   **Parity**: None
+  
+![The Putty configuration](https://github.com/NazaninAzhdari/space-invaders-game/blob/main/doc/pic/putty_configuration.png)
+  
+![The COM configuration](https://github.com/NazaninAzhdari/space-invaders-game/blob/main/doc/pic/COM_configuration.png) 
+  
+4.  **Pin Assignment**: Assign the Input and output pins according to your board's manual. For the Cyclone V GX FPGA Board, I have used the follwing Pinout table:  
+  
+        [Click here to open the Pinout-Table.CSV](https://github.com/NazaninAzhdari/space-invaders-game/blob/main/doc/pinout/space_invaders_top.csv)  
 
+5.  **Compilation**: Add all the `.vhd` files to your Quartus project. Set `top/space_invaders_top` as the Top-Level Entity. Run the "Start Compilation" process.  
+6.  **Programming**: Once compiled, use the Quartus Programmer to load the `.sof` file onto the FPGA.
+  
+  
 **Enjoy your game and good luck defending the galaxy!**
