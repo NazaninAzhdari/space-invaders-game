@@ -16,7 +16,13 @@ entity space_invaders_top is
         o_hdmi_HS       :   out     STD_LOGIC;
         o_hdmi_VS       :   out     STD_LOGIC;
         o_hdmi_DE       :   out     STD_LOGIC;
-        o_hdmi_data_bus :   out     unsigned(23 downto 0)
+        o_hdmi_data_bus :   out     unsigned(23 downto 0);
+
+        --Audio Interface
+        o_MCLK          :   out     STD_LOGIC;
+        o_LRCLK         :   out     STD_LOGIC;
+        o_BCLK          :   out     STD_LOGIC;
+        o_DATA          :   out     STD_LOGIC
     );
 end space_invaders_top;
 
@@ -175,6 +181,26 @@ architecture RTL of space_invaders_top is
             o_loose_live_en => w_loose_live_en,
             o_win_en => w_win_en,
             o_end_en => w_end_en
+        );
+
+
+        ---------------------------------------
+        --Audio Interface
+        ---------------------------------------
+        generating_sounds_of_game: entity work.audio_top
+        port map(
+            i_clk50 => i_clk,
+            i_reset => w_reset,
+            i_bullets=> w_bullets,
+            i_invaders => w_invaders,
+            i_UFO_active => w_ufo_active,
+            i_death_sound_En => w_loose_live_en,
+            i_gameover_sound_En => w_end_en,
+            i_win_sound_En => w_win_en,
+            o_MCLK => o_MCLK,
+            o_LRCLK => o_LRCLK,
+            o_BCLK => o_BCLK,
+            o_DATA => o_data
         );
             
         ----------------------------------------

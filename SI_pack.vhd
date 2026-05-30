@@ -158,7 +158,10 @@ package SI_pack is
     type ROM14_64 is array (0 to 13) of unsigned(0 to 63);
     type ROM20_40 is array (0 to 19) of unsigned(0 to 39);
     type ROM10_64 is array (0 to 9) of unsigned(0 to 63);
-
+    --------------------------------------------------------
+    --A flexible size array to store the melody tones
+    --------------------------------------------------------
+    type t_tone_array is array (natural range <>) of integer;
 
     -------------------------------------------------------
     --Storing the Pixel art of characters in ROM

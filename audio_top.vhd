@@ -31,7 +31,7 @@ architecture RTL of audio_top is
     --Sample Signals
 	signal r_sample         : unsigned(23 downto 0)  :=(others=>'0');
     signal w_kill_invs_sample   : unsigned(23 downto 0)  :=(others=>'0');
-	signal w_kill_UFO__sample    : unsigned(23 downto 0)  :=(others=>'0');
+	signal w_kill_UFO_sample    : unsigned(23 downto 0)  :=(others=>'0');
     signal w_bullet_sample   : unsigned(23 downto 0)  :=(others=>'0');
 	signal w_death_sample    : unsigned(23 downto 0)  :=(others=>'0');
     signal w_gameover_sample   : unsigned(23 downto 0)  :=(others=>'0');
@@ -46,10 +46,13 @@ architecture RTL of audio_top is
     signal w_win_DV        : STD_LOGIC              :='0';
 
     signal r_kill_invs_sound_en       : STD_LOGIC              :='0';
-    signal w_kill_UFO_sound_en        : STD_LOGIC              :='0';
-    signal w_bullet_sound_en       : STD_LOGIC              :='0';
+    signal r_kill_UFO_sound_en        : STD_LOGIC              :='0';
+    signal r_bullet_sound_en       : STD_LOGIC              :='0';
 
-	
+	 signal r_bullets : unsigned(pc_BULLET_LIMIT-1 downto 0) :=(others=>'0');
+	 signal r_invaders : unsigned(pc_INV_LIMIT-1 downto 0) :=(others=>'0');
+	 signal r_ufo_active : STD_LOGIC  :='0';
+	 
     begin 
         process(i_clk50) is
             begin
@@ -80,7 +83,7 @@ architecture RTL of audio_top is
 
                     --generating enable signal for killing ufo sound
                     r_ufo_active <= i_ufo_active;
-                    if i_ufo(i).ACTIVE = '0' and r_ufo(i) = '1' then
+                    if i_ufo_ACTIVE = '0' and r_ufo_active = '1' then
                         r_kill_ufo_sound_en <= '1';
                     else
                         r_kill_ufo_sound_en <= '0';
@@ -91,7 +94,7 @@ architecture RTL of audio_top is
         -------------------------------------------
         --Generating the sound for killing invaders
         --------------------------------------------
-        killing_melody_generator: entity work.melody_gen
+        killing_invs_melody_generator: entity work.melody_gen
         generic map(
             g_SAMPLE_WIDTH => 24,
             g_HALF_PERIOD_TONE => (27, 34, 48), --Corrosponds to 900Hz, 700Hz, 500Hz
@@ -109,7 +112,7 @@ architecture RTL of audio_top is
         -------------------------------------------
         --Generating the sound for killing UFO
         --------------------------------------------
-        killing_melody_generator: entity work.melody_gen
+        killing_ufo_melody_generator: entity work.melody_gen
         generic map(
             g_SAMPLE_WIDTH => 24,
             g_HALF_PERIOD_TONE => (20, 30, 53, 53), --Corrosponds to 1200Hz, 800Hz, 450Hz
@@ -184,9 +187,9 @@ architecture RTL of audio_top is
         winning_melody_generator: entity work.melody_gen
         generic map(
             g_SAMPLE_WIDTH => 24,
-            g_HALF_PERIOD_TONE => (34, 27, 20), --Corrosonds to 700Hz, 900Hz, 1200Hz
-            g_TONE_LIMIT => 3,                                                  --Maximum number of the tones
-            g_DURATION_LIMIT => 7040                                             --146ms
+            g_HALF_PERIOD_TONE => (40, 32, 27, 22, 18, 18, 15, 15, 15), --Corrosonds whatttttttttttttttttttttttttttt
+            g_TONE_LIMIT => 9,                                                  --Maximum number of the tones
+            g_DURATION_LIMIT => 7200                                             --????????????????
         )
         port map(
             i_clk => i_clk50,
@@ -218,12 +221,13 @@ architecture RTL of audio_top is
         --------------------------------------------------------
         --Determine which sample should go to the I2s-Tx module
         --------------------------------------------------------
-        r_sample <= w_bullet_sample when w_bullet_DV = '1' else
+        r_sample <= w_gameover_sample when w_gameover_DV = '1' else
+                    w_win_sample when w_win_DV = '1' else
+							w_bullet_sample when w_bullet_DV = '1' else
                     w_death_sample when w_death_DV = '1' else
                     w_kill_invs_sample when w_kill_invs_DV = '1' else
                     w_kill_UFO_sample when w_kill_UFO_DV = '1' else
-                    w_gameover_sample when w_gameover_DV = '1' else
-                    w_win_sample when w_win_DV = '1' else
+                    
 					(others=>'0');
 
         o_LRCLK <= w_LRCLK;
