@@ -2,9 +2,12 @@
 
 Welcome to the **Space Invaders Game** repository! This repository contains a complete implementation of the classic arcade "space invaders" game, designed to work on the **Cyclone V GX FPGA Board**. Let's have a quick Demo of the Game in video below. I really recommend you to watch the video, it's too much FUN.=)))))  
   
+## Watch my video on youtube (click on the picture below):  
+[![Watch the video](https://img.youtube.com/vi/WcMMTcasyy4/maxresdefault.jpg)](https://youtu.be/WcMMTcasyy4)  
+  
   
 **Why do I Build games?**  
-In the summer of 2026, I decided that I wanted to truly master RTL design, and I asked myself: **what could be more joyful than building games in hardware?=)))**  
+In the spring of 2026, I decided that I wanted to truly master RTL design, and I asked myself: **what could be more joyful than building games in hardware?=)))**  
 That question started my whole FPGA game‑development journey. Space Invaders became my fourth serious milestone, and probably my last gaming project for a while. As I’m writing this README, I can feel myself moving toward new challenges. Recently, I’ve been thinking about trying image and video‑processing projects on FPGA. I feel like I’ve done enough game projects, and now I want to explore something more advanced and closer to real industrial work. but who knows, I’ll see where the journey goes.  
 Through the space invaders game, I practiced real RTL design, timing, video output, and hardware‑driven game logic. This project is the point where my learning turned into something creative, fun, and fully my own.   
 
