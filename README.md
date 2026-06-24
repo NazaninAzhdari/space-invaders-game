@@ -17,7 +17,7 @@ Through the space invaders game, I practiced real RTL design, timing, video outp
 
 The goal of this project is to recreate the retro Space Invaders experience on hardware. It features a player-controlled "Space Sheep" (my version of spaceship), waves of moving invaders, a mysterious UFO, and a projectile system for both the player and the enemies. The game manages different states, such as the start screen, active gameplay, losing lives, and the "Game Over" or "Win" conditions. Everything is synchronized to a **640x480 VGA timing** at 60Hz(which will be displayed on monitor using HDMI port) and includes **I2S-based audio** for sound effects and music. The game uses **UART-RX interface** and player can communicate with game using a keyboard which is connected to a PC.  
   
-![Demo](https://github.com/NazaninAzhdari/space-invaders-game/blob/main/assets/game_gif.mp4)  
+![Demo](https://github.com/NazaninAzhdari/space-invaders-game/blob/main/assets/game.gif)  
   
 **A fun thing to add here:** when I started writing this game, I began with the spaceship logic. At the moment I was writing the spaceship module, I couldn’t remember the exact spelling of the word “spaceship”. I wasn’t sure if it was “spacesheep” or “spaceship”, so I just wrote “spacesheep” and continued with it.  
 When I reached the end of the project, I realized, “oh no! I chose the wrong spelling”, but it was too late. So I decided to keep it as “spacesheep”. Whenever you see “spacesheep” in the code, it actually means “spaceship”. I kept it as a funny part of this project, since it doesn’t affect the game logic at all.  
